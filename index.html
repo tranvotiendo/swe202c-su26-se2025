@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SWE202c - Nhập môn Kỹ thuật Phần mềm</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       CSS VARIABLES & THEME
+    ============================================= */
+    :root {
+      --bg: #f5f2ec;
+      --surface: #ffffff;
+      --surface2: #eee9e0;
+      --border: #d6cfc3;
+      --text: #1a1714;
+      --text-muted: #6b6358;
+      --accent: #c8501a;
+      --accent2: #2a6dd9;
+      --accent3: #1a8a4a;
+      --highlight: #fff3cd;
+      --highlight-border: #f5c842;
+      --tag-bg: #f0ebe3;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+      --radius: 12px;
+      --radius-sm: 6px;
+    }
+    [data-theme="dark"] {
+      --bg: #121010;
+      --surface: #1e1b18;
+      --surface2: #2a2520;
+      --border: #3a3530;
+      --text: #f0ebe3;
+      --text-muted: #9a9080;
+      --accent: #e8704a;
+      --accent2: #5a9bf5;
+      --accent3: #4ac87a;
+      --highlight: #2a2200;
+      --highlight-border: #a08020;
+      --tag-bg: #2a2520;
+      --shadow: 0 2px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+    }
+
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.7;
+      transition: background 0.3s, color 0.3s;
+    }
+    strong { color: var(--accent); font-weight: 600; }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--surface2);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.88em;
+      color: var(--accent2);
+    }
+    a { color: var(--accent2); text-decoration: none; transition: color 0.2s;}
+    a:hover { color: var(--accent); }
+
+    /* =============================================
+       SCROLLBAR
+    ============================================= */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* =============================================
+       LAYOUT
+    ============================================= */
+    .page-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+    .grid {
+        display: grid;
+        gap: 16px;
+    }
+    .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+    /* =============================================
+       HEADER
+    ============================================= */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(245, 242, 236, 0.8); /* Fallback for browsers not supporting backdrop-filter */
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(10px);
+    }
+    [data-theme="dark"] .site-header {
+      background: rgba(18, 16, 16, 0.8);
+    }
+    .site-header .brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+    }
+    .header-controls { display: flex; gap: 10px; align-items: center; }
+    .dark-toggle {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      transition: all 0.2s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .dark-toggle:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--accent);
+      z-index: 200;
+      transition: width 0.1s;
+    }
+
+    /* =============================================
+       HERO
+    ============================================= */
+    .hero {
+      padding: 60px 0 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+    .hero-label {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--accent);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 650px;
+      line-height: 1.7;
+    }
+
+    /* =============================================
+       SECTION
+    ============================================= */
+    .section {
+      margin-bottom: 52px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .section-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--accent);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .section h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    /* =============================================
+       CARD
+    ============================================= */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 26px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .card h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .card p { color: var(--text); margin-bottom: 10px; }
+    .card p:last-child { margin-bottom: 0; }
+    .card ul, .card ol {
+      padding-left: 20px;
+      color: var(--text);
+    }
+    .card li { margin: 6px 0; font-size: 0.95rem; }
+    .card-accent { border-left: 4px solid var(--accent); }
+    .card-highlight {
+      border-left: 4px solid var(--highlight-border);
+      background: var(--highlight);
+    }
+
+    /* =============================================
+       ACCORDION (For Sessions)
+    ============================================= */
+    .accordion { margin-bottom: 10px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+    .accordion-btn {
+      width: 100%;
+      background: var(--surface);
+      border: none;
+      padding: 16px 20px;
+      text-align: left;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.97rem;
+      font-weight: 500;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.2s;
+    }
+    .accordion-btn:hover { background: var(--surface2); }
+    .accordion-btn.open { background: var(--surface2); color: var(--accent); }
+    .accordion-icon {
+      font-size: 1.2rem;
+      transition: transform 0.3s;
+      flex-shrink: 0;
+      color: var(--accent);
+    }
+    .accordion-btn.open .accordion-icon { transform: rotate(180deg); }
+    .accordion-body {
+      background: var(--surface);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s;
+      padding: 0 20px;
+    }
+    .accordion-body.open {
+      max-height: 800px;
+      padding: 18px 20px;
+      border-top: 1px solid var(--border);
+    }
+    .accordion-body p, .accordion-body li { font-size: 0.95rem; color: var(--text); }
+    .accordion-body ul { padding-left: 18px; }
+    .accordion-body li { margin: 6px 0; }
+    .accordion-body strong { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Syne';}
+
+    /* =============================================
+       TABLE
+    ============================================= */
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface2);
+      padding: 12px 16px;
+      text-align: left;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--border);
+    }
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+
+    /* =============================================
+       SUMMARY LIST (For CLOs)
+    ============================================= */
+    .summary-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .summary-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .summary-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: var(--accent);
+      line-height: 1;
+      flex-shrink: 0;
+      min-width: 32px;
+    }
+    .summary-content { font-size: 0.93rem; color: var(--text); }
+    .summary-content strong { color: var(--text); }
+    
+    /* =============================================
+       BUTTON
+    ============================================= */
+    .btn {
+      display: inline-block;
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      text-align: center;
+    }
+    .btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { opacity: 0.85; }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 20px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* =============================================
+       RESPONSIVE
+    ============================================= */
+    @media (max-width: 768px) {
+      .grid-cols-2, .grid-cols-3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 1.8rem; }
+      .card { padding: 16px; }
+      .section h2 { font-size: 1.2rem; }
+    }
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<header class="site-header">
+  <div class="brand">SWE202c</div>
+  <div class="header-controls">
+    <button class="dark-toggle" onclick="toggleDark()" id="darkBtn">🌙 Dark Mode</button>
+  </div>
+</header>
+
+<div class="page-wrapper">
+
+  <!-- ============ HERO ============ -->
+  <div class="hero fade-in">
+    <div class="hero-label">Course code: SWE202c</div>
+    <h1>Introduction to <span>Software Engineering</span></h1>
+    <p class="hero-desc">
+      Khóa học này giới thiệu toàn diện về các nguyên tắc, phương pháp và thực tiễn kỹ thuật phần mềm hiện đại, bao gồm cả việc ứng dụng Trí tuệ nhân tạo tạo sinh (GenAI) trong phát triển phần mềm.
+    </p>
+  </div>
+
+  <!-- ============ SECTION I: COURSE OVERVIEW ============ -->
+  <div class="section fade-in" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Thông tin tổng quan</h2>
+    </div>
+
+    <div class="grid grid-cols-3">
+        <div class="card"><h3>Số tín chỉ</h3><p style="font-size:1.5rem; font-weight:700;">3</p></div>
+        <div class="card"><h3>Bậc đào tạo</h3><p style="font-size:1.5rem; font-weight:700;">Cử nhân</p></div>
+        <div class="card"><h3>Môn tiên quyết</h3><p style="font-size:1.5rem; font-weight:700;">PRO192</p></div>
+    </div>
+    
+    <div class="card">
+        <h3>Phân bổ thời gian</h3>
+        <p>Tổng thời gian học: <strong>150 giờ</strong>. Trong đó bao gồm:</p>
+        <ul>
+            <li>82 giờ học online</li>
+            <li>3 giờ học offline</li>
+            <li>1 giờ thi lý thuyết cuối kỳ (TE)</li>
+            <li>2 giờ thi thực hành cuối kỳ (PE)</li>
+            <li>62 giờ tự học</li>
+        </ul>
+    </div>
+    
+    <div class="card card-accent">
+      <h3>Mô tả môn học</h3>
+      <p>Khóa học gồm hai phần: Phần đầu giới thiệu việc sử dụng <strong>Generative AI (GenAI)</strong> và <strong>Large Language Models (LLMs)</strong> trong phát triển phần mềm hiện đại, giúp tăng tốc quá trình từ phân tích yêu cầu, tạo mã nguồn, viết kiểm thử, gỡ lỗi và tạo tài liệu kỹ thuật.</p>
+      <p>Phần thứ hai cung cấp kiến thức nền tảng và nâng cao về vòng đời phát triển phần mềm (SDLC), bao gồm kỹ thuật yêu cầu, thiết kế kiến trúc và hướng đối tượng, xây dựng phần mềm, đảm bảo chất lượng và các phương pháp DevOps. Khóa học nhấn mạnh các kỹ thuật thực tế, phù hợp với ngành công nghiệp như quản lý phiên bản, kiểm thử tự động, phát triển API và phát triển lặp theo Agile.</p>
+    </div>
+  </div>
+
+  <!-- ============ SECTION II: LEARNING MATERIALS ============ -->
+  <div class="section fade-in" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Tài liệu học tập (MOOCs)</h2>
+    </div>
+    <div class="grid grid-cols-2">
+        <div class="card">
+            <h3>MOOC 01</h3>
+            <p>Generative AI in Software Development</p>
+            <a href="https://www.coursera.org/learn/generative-ai-in-software-development#modules" target="_blank" class="btn">Vào Coursera</a>
+            
+        </div>
+        <div class="card">
+            <h3>MOOC 02</h3>
+            <p>Software Engineering: Modeling Software Systems using UML</p>
+            <a href="https://www.coursera.org/learn/software-engineering-modeling-software-systems-using-uml?specialization=software-engineering" target="_blank" class="btn">Vào khóa học</a>
+            <a href="lecture2-1.html" target="_blank" class="btn">Lecture 2-1</a>
+        </div>
+        <div class="card">
+            <h3>MOOC 03</h3>
+            <p>Software Engineering: Implementation and Testing</p>
+            <a href="https://www.coursera.org/learn/software-engineering-implementation-and-testing?specialization=software-engineering" target="_blank" class="btn">Vào khóa học</a>
+        </div>
+        <div class="card">
+            <h3>MOOC 04</h3>
+            <p>Software Engineering: Software Design and Project Management</p>
+            <a href="https://www.coursera.org/learn/software-engineering-software-design-and-project-management?specialization=software-engineering" target="_blank" class="btn">Vào khóa học</a>
+        </div>
+    </div>
+  </div>
+  
+  <!-- ============ SECTION III: CLOs ============ -->
+  <div class="section fade-in" id="s3">
+    <div class="section-header">
+        <span class="section-num">03</span>
+        <h2>Chuẩn đầu ra (CLOs)</h2>
+    </div>
+    <div class="summary-list">
+        <div class="summary-item">
+            <div class="summary-num">1</div>
+            <div class="summary-content"><strong>CLO1:</strong> Hiểu và áp dụng các mô hình Generative AI trong suốt vòng đời phát triển phần mềm—bao gồm tạo mã, kiểm thử, gỡ lỗi và tài liệu—đồng thời đánh giá chất lượng đầu ra, tích hợp GenAI vào quy trình phát triển và đảm bảo tuân thủ các quy tắc về đạo đức, bảo mật và sở hữu trí tuệ.</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-num">2</div>
+            <div class="summary-content"><strong>CLO2:</strong> Hiểu các nguyên tắc mô hình hóa phần mềm và áp dụng kỹ thuật UML để phân tích yêu cầu, thiết kế cấu trúc và hành vi của hệ thống, tạo và diễn giải các biểu đồ UML, và đánh giá các mô hình về tính chính xác, đầy đủ và nhất quán.</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-num">3</div>
+            <div class="summary-content"><strong>CLO3:</strong> Triển khai các thành phần phần mềm theo tiêu chuẩn mã hóa công nghiệp, áp dụng các kỹ thuật kiểm thử để đảm bảo tính đúng đắn và độ tin cậy của phần mềm, và đánh giá chất lượng mã nguồn thông qua các hoạt động gỡ lỗi, xác minh và xác nhận có hệ thống.</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-num">4</div>
+            <div class="summary-content"><strong>CLO4:</strong> Thiết kế hệ thống phần mềm bằng các nguyên tắc và mẫu thiết kế phù hợp, lập kế hoạch và quản lý hiệu quả các dự án phần mềm, điều phối hoạt động nhóm, theo dõi tiến độ và đảm bảo sản phẩm dự án đáp ứng các yêu cầu về chất lượng, lịch trình và nguồn lực.</div>
+        </div>
+    </div>
+  </div>
+
+  <!-- ============ SECTION IV: ASSESSMENT ============ -->
+  <div class="section fade-in" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Đánh giá & Tính điểm</h2>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Hạng mục</th>
+                    <th>Loại</th>
+                    <th>Tỷ trọng</th>
+                    <th>Điều kiện qua</th>
+                    <th>Thời gian</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>PE (Final Practical Exam)</strong></td>
+                    <td>Thi cuối kỳ</td>
+                    <td>50.0%</td>
+                    <td>>= 4 điểm</td>
+                    <td>120 phút</td>
+                </tr>
+                <tr>
+                    <td><strong>TE (Final Theory Exam)</strong></td>
+                    <td>Thi cuối kỳ</td>
+                    <td>50.0%</td>
+                    <td>>= 4 điểm</td>
+                    <td>60 phút</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card card-highlight">
+        <h3>Lưu ý quan trọng về đánh giá</h3>
+        <ul>
+            <li>Sinh viên <strong>phải hoàn thành tất cả các khóa học MOOC online</strong> trên Coursera để đủ điều kiện tham gia Thi cuối kỳ (Final Exam).</li>
+            <li>Sinh viên hoàn thành tất cả MOOCs trước hạn cuối của môn học sẽ được <strong>thưởng 1 điểm</strong>.</li>
+            <li><strong>Điều kiện qua môn:</strong> Điểm TE >= 4 <strong>VÀ</strong> Điểm PE >= 4 <strong>VÀ</strong> Điểm tổng kết (FR) >= 5.</li>
+            <li><strong>Công thức tính điểm tổng kết (FR):</strong><br><code>FR = min[10, (Điểm TE * 50%) + (Điểm PE * 50%) + điểm thưởng]</code></li>
+        </ul>
+    </div>
+  </div>
+
+  <!-- ============ SECTION V: SESSIONS ============ -->
+  <div class="section fade-in" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Lộ trình học tập</h2>
+    </div>
+
+    <!-- Session 1-3: MOOC 1 -->
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        <span><strong>Buổi 1-3:</strong> MOOC 1 - Generative AI in Software Development</span>
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <p><strong>Chủ đề:</strong> Giới thiệu khóa học SWE202c, AI và xây dựng phần mềm, AI và Chuyển đổi số, Đồ án cuối khóa.</p>
+        <p><strong>Nhiệm vụ:</strong> Tham gia buổi giới thiệu (tùy chọn), xem video, đọc tài liệu, làm tất cả các câu đố và hoàn thành bài tập được giao.</p>
+        <br><a href="https://www.coursera.org/learn/generative-ai-in-software-development" target="_blank" class="btn">Đến MOOC 1</a>
+        
+      </div>
+    </div>
+    
+    <!-- Session 4-6: MOOC 2 -->
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        <span><strong>Buổi 4-6:</strong> MOOC 2 - Software Engineering: Modeling Software Systems using UML</span>
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <p><strong>Chủ đề:</strong> Giới thiệu về Kỹ thuật phần mềm, Mô hình hóa hệ thống bằng UML, Các loại quan hệ trong biểu đồ lớp, Thu thập yêu cầu hệ thống, Mô hình hóa Use Case, Đặc tả Use Case, Yêu cầu phi chức năng.</p>
+        <p><strong>Nhiệm vụ:</strong> Xem video, đọc tài liệu, làm quiz và hoàn thành bài tập.</p>
+        <br><a href="https://www.coursera.org/learn/software-engineering-modeling-software-systems-using-uml" target="_blank" class="btn">Đến MOOC 2</a> 
+        <a href="lecture2-1.html" target="_blank" class="btn">Lecture 2-1</a>
+      </div>
+    </div>
+
+    <!-- Session 7-9: MOOC 3 -->
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        <span><strong>Buổi 7-9:</strong> MOOC 3 - Software Engineering: Implementation and Testing</span>
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <p><strong>Chủ đề:</strong> Giới thiệu phát triển phần mềm, Quy trình phát triển, Triển khai và lập trình phòng thủ, Gỡ lỗi và quản lý cấu hình, Kiểm thử hộp trắng, Kiểm thử hộp đen, Kiểm thử chấp nhận.</p>
+        <p><strong>Nhiệm vụ:</strong> Xem video, đọc tài liệu, làm quiz và hoàn thành bài tập.</p>
+        <br><a href="https://www.coursera.org/learn/software-engineering-implementation-and-testing" target="_blank" class="btn">Đến MOOC 3</a>
+      </div>
+    </div>
+
+    <!-- Session 10-12: MOOC 4 -->
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        <span><strong>Buổi 10-12:</strong> MOOC 4 - Software Engineering: Software Design and Project Management</span>
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <p><strong>Chủ đề:</strong> Phân tích và thiết kế hệ thống, Biểu đồ máy trạng thái, Các mẫu thiết kế (Design Patterns), Đảm bảo chất lượng phần mềm, Quản lý phát triển phần mềm.</p>
+        <p><strong>Nhiệm vụ:</strong> Xem video, đọc tài liệu, làm quiz, hoàn thành bài tập và tham gia buổi ôn tập (nếu có). <strong>Hạn chót hoàn thành Coursera là cuối ngày thứ Sáu của tuần.</strong></p>
+        <br><a href="https://www.coursera.org/learn/software-engineering-software-design-and-project-management" target="_blank" class="btn">Đến MOOC 4</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="page-wrapper">
+    SWE202c · Introduction to Software Engineering · FPT University · DoTVTSE203571 · Last version: 21.04.2026
+  </div>
+</footer>
+
+<script>
+  /* ---------- Dark Mode ---------- */
+  function toggleDark() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('darkBtn').textContent = isDark ? '🌙 Dark Mode' : '☀️ Light Mode';
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  }
+  (function() {
+    const t = localStorage.getItem('theme');
+    if (t === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('darkBtn').textContent = '☀️ Light Mode';
+      });
+    }
+  })();
+
+  /* ---------- Progress Bar ---------- */
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docH > 0 ? (scrollTop / docH) * 100 : 0;
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+
+  /* ---------- Accordion ---------- */
+  function toggleAcc(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    btn.classList.toggle('open', !isOpen);
+    body.classList.toggle('open', !isOpen);
+  }
+
+  /* ---------- Fade-in on scroll ---------- */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

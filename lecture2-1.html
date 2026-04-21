@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lecture 2-1 – Introduction UML & Class Diagram</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ============ STICKY HEADER ============ -->
+<header class="site-header">
+  <div class="brand">UML · Lecture 2-1</div>
+  <div class="header-controls">
+    <button class="dark-toggle" onclick="toggleDark()" id="darkBtn">🌙 Dark Mode</button>
+  </div>
+</header>
+
+<div class="page-wrapper">
+
+  <!-- ============ HERO ============ -->
+  <div class="hero fade-in">
+    <div class="hero-label">Lecture 2-1</div>
+    <h1>Introduction <span>UML</span> &<br>Class Diagrams</h1>
+    <p class="hero-desc">
+      Bài giảng này giới thiệu về <strong>UML (Unified Modeling Language)</strong> như một công cụ trực quan để mô hình hóa các hệ thống phần mềm. Trọng tâm chính là <strong>Class Diagram (Biểu đồ lớp)</strong>, một loại biểu đồ dùng để nắm bắt và theo dõi các <strong>objects (đối tượng)</strong> quan trọng trong hệ thống.
+    </p>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-title">📋 Table of content</div>
+      <ol>
+        <li><a href="#s1">Tổng quan về UML</a></li>
+        <li><a href="#s2">Cấu trúc của UML</a></li>
+        <li><a href="#s3">Các loại biểu đồ UML trong khóa học</a></li>
+        <li><a href="#s4">Tại sao cần xây dựng mô hình?</a></li>
+        <li><a href="#s5">Phép loại suy: Mô hình máy bay</a></li>
+        <li><a href="#s6">Lợi ích của mô hình trong phát triển phần mềm</a></li>
+        <li><a href="#s7">Tại sao là Mô hình hóa hướng đối tượng?</a></li>
+        <li><a href="#s8">Requirement Model vs. Solution Model</a></li>
+        <li><a href="#s-example">Ví dụ minh họa</a></li>
+        <li><a href="#s-note">Ghi chú quan trọng</a></li>
+        <li><a href="#s-flash">Flashcard ôn tập</a></li>
+        <li><a href="#s-quiz">Quiz kiểm tra</a></li>
+        <li><a href="#s-summary">Tổng kết</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ============ SECTION I: UML OVERVIEW ============ -->
+  <div class="section fade-in" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Tổng quan về UML</h2>
+    </div>
+
+    <div class="card card-accent">
+      <h3>Định nghĩa</h3>
+      <p>UML là một <strong>general-purpose visual modeling language (ngôn ngữ mô hình hóa trực quan, đa mục đích)</strong> cho các hệ thống. Nó cho phép vẽ sơ đồ (<strong>diagram</strong>) để biểu diễn hệ thống sẽ xây dựng.</p>
+    </div>
+
+    <div class="card">
+      <h3>Nguồn gốc</h3>
+      <p>UML tích hợp các <strong>best practices (thực hành tốt nhất)</strong> trong các kỹ thuật mô hình hóa hướng đối tượng (<strong>OO modeling techniques</strong>).</p>
+    </div>
+
+    <div class="card">
+      <h3>Tính chất</h3>
+      <ul>
+        <li><strong>Trung lập về phương pháp luận phát triển:</strong> UML <strong>không phải</strong> là một <span class="tip" data-tip="Bộ quy tắc, công cụ và thực hành để tổ chức quá trình phát triển phần mềm (ví dụ: Agile, Scrum, Waterfall)."><strong>software development methodology (phương pháp luận phát triển phần mềm)</strong></span>, nó chỉ là ngôn ngữ để mô hình hóa.</li>
+        <li><strong>Chuẩn công nghiệp (industry-standard)</strong> cho mô hình hóa hệ thống theo hướng đối tượng.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Phạm vi áp dụng</h3>
+      <ul>
+        <li>Rất phù hợp với <strong>OO (Object-Oriented - Hướng đối tượng)</strong> vì UML nắm bắt một tập hợp các đối tượng quan trọng trong mô hình.</li>
+        <li>Tuy nhiên, UML cũng có thể được sử dụng cho các hệ thống <strong>non-OO (không hướng đối tượng)</strong>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ SECTION II: UML STRUCTURE ============ -->
+  <div class="section fade-in" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Cấu trúc của UML</h2>
+    </div>
+
+    <p style="margin-bottom:16px; color: var(--text-muted);">UML có cấu trúc bao gồm nhiều thành phần khác nhau. Bấm để xem chi tiết từng phần:</p>
+
+    <!-- Accordion -->
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        🧱 Building blocks (Khối xây dựng)
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <p>Các thành phần cơ bản để vẽ mô hình, bao gồm: <strong>things (sự vật)</strong>, <strong>relationships (mối quan hệ)</strong>, <strong>diagrams (biểu đồ)</strong>.</p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        ⚙️ Common mechanisms (Cơ chế chung)
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <ul>
+          <li><strong>Textual descriptions:</strong> Mô tả văn bản bổ sung.</li>
+          <li><strong>Adornments:</strong> Các chi tiết trang trí bổ sung trong biểu đồ.</li>
+          <li><strong>Common divisions:</strong> Các định nghĩa bổ sung để buộc suy nghĩ theo một cách nhất định.</li>
+          <li><strong>Extensibility mechanisms (Cơ chế mở rộng):</strong> Cho phép mở rộng mô hình.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        👁️ Perspectives (Góc nhìn)
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <p>Có thể xây dựng mô hình từ nhiều góc nhìn khác nhau:</p>
+        <ul>
+          <li><strong>Use-case view</strong> (góc nhìn ca sử dụng)</li>
+          <li><strong>Logical view</strong> (góc nhìn logic)</li>
+          <li><strong>Implementation view</strong> (góc nhìn cài đặt)</li>
+          <li><strong>Process view</strong> (góc nhìn quy trình)</li>
+          <li><strong>Deployment view</strong> (góc nhìn triển khai)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SECTION III: DIAGRAMS ============ -->
+  <div class="section fade-in" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Các loại biểu đồ UML trong khóa học</h2>
+    </div>
+
+    <p style="margin-bottom:16px; color: var(--text-muted);">Khóa học này tập trung vào <strong>ba loại biểu đồ</strong> chính:</p>
+
+    <!-- Tabs -->
+    <div class="tabs-wrapper">
+      <div class="tab-list">
+        <button class="tab-btn active" onclick="openTab(this, 'tab-class')">📦 Class Diagram</button>
+        <button class="tab-btn" onclick="openTab(this, 'tab-usecase')">🎯 Use-case Diagram</button>
+        <button class="tab-btn" onclick="openTab(this, 'tab-state')">🔄 State Machine Diagram</button>
+      </div>
+      <div class="tab-panel active" id="tab-class">
+        <h3 style="font-family:'Syne',sans-serif; font-weight:700; margin-bottom:10px;">Class Diagram (Biểu đồ lớp)</h3>
+        <p>Nắm bắt tất cả <strong>data requirements (yêu cầu dữ liệu)</strong> dưới dạng một tập hợp các <strong>objects (đối tượng)</strong> và <strong>relationships (mối quan hệ)</strong> giữa chúng.</p>
+        <div class="note-box" style="margin-top:14px;">
+          <div class="note-box-title">⭐ Trọng tâm bài học này</div>
+          <p>Class Diagram là công cụ chính được sử dụng trong bài giảng này để mô hình hóa yêu cầu dữ liệu.</p>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-usecase">
+        <h3 style="font-family:'Syne',sans-serif; font-weight:700; margin-bottom:10px;">Use-case Diagram (Biểu đồ ca sử dụng)</h3>
+        <p>Nắm bắt tất cả <strong>functionalities (chức năng)</strong> mà hệ thống cung cấp.</p>
+      </div>
+      <div class="tab-panel" id="tab-state">
+        <h3 style="font-family:'Syne',sans-serif; font-weight:700; margin-bottom:10px;">State Machine Diagram (Biểu đồ máy trạng thái)</h3>
+        <p>Nắm bắt tất cả các <strong>states (trạng thái)</strong> khả dĩ của một đối tượng.</p>
+      </div>
+    </div>
+
+    <!-- Table view -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Loại biểu đồ</th>
+            <th>Mục đích</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Class Diagram (Biểu đồ lớp)</strong></td>
+            <td>Nắm bắt tất cả <strong>data requirements (yêu cầu dữ liệu)</strong> dưới dạng một tập hợp các <strong>objects (đối tượng)</strong> và <strong>relationships (mối quan hệ)</strong> giữa chúng.</td>
+          </tr>
+          <tr>
+            <td><strong>Use-case Diagram (Biểu đồ ca sử dụng)</strong></td>
+            <td>Nắm bắt tất cả <strong>functionalities (chức năng)</strong> mà hệ thống cung cấp.</td>
+          </tr>
+          <tr>
+            <td><strong>State Machine Diagram (Biểu đồ máy trạng thái)</strong></td>
+            <td>Nắm bắt tất cả các <strong>states (trạng thái)</strong> khả dĩ của một đối tượng.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ SECTION IV: WHY BUILD MODELS ============ -->
+  <div class="section fade-in" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Tại sao cần xây dựng mô hình?</h2>
+    </div>
+
+    <div class="card card-highlight">
+      <h3>⚠️ Vấn đề cốt lõi là giao tiếp (communication)</h3>
+      <p>Các bên liên quan (<strong>stakeholders</strong>) khác nhau có những ý tưởng khác nhau trong đầu.</p>
+    </div>
+
+    <div class="card">
+      <h3>Minh họa qua ví dụ "hiểu lầm" trong dự án</h3>
+
+      <!-- Visual chain of misunderstanding -->
+      <div class="diagram-box">
+        <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.82rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:16px;">Chuỗi hiểu lầm trong dự án</div>
+        <div class="diagram-row">
+          <div class="diagram-node">Khách hàng<br><small style="font-family:'DM Sans',sans-serif;font-size:0.7rem;color:var(--text-muted)">giải thích</small></div>
+          <div class="diagram-arrow">→</div>
+          <div class="diagram-node">Trưởng dự án<br><small style="font-family:'DM Sans',sans-serif;font-size:0.7rem;color:var(--text-muted)">hiểu</small></div>
+          <div class="diagram-arrow">→</div>
+          <div class="diagram-node">Analyst<br><small style="font-family:'DM Sans',sans-serif;font-size:0.7rem;color:var(--text-muted)">thiết kế</small></div>
+        </div>
+        <div class="diagram-row">
+          <div class="diagram-node">Lập trình viên<br><small style="font-family:'DM Sans',sans-serif;font-size:0.7rem;color:var(--text-muted)">cài đặt</small></div>
+          <div class="diagram-arrow">→</div>
+          <div class="diagram-node">Tư vấn kinh doanh<br><small style="font-family:'DM Sans',sans-serif;font-size:0.7rem;color:var(--text-muted)">mô tả</small></div>
+          <div class="diagram-arrow">→</div>
+          <div class="diagram-node" style="border-color:var(--accent3);color:var(--accent3);">Nhu cầu thực<br><small style="font-family:'DM Sans',sans-serif;font-size:0.7rem;color:var(--text-muted)">(rất đơn giản!)</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-green">
+      <h3>✅ Giải pháp</h3>
+      <p>Xây dựng một <strong>mô hình (model)</strong> ngay từ đầu dự án để tất cả các bên có thể giao tiếp và thống nhất ý tưởng bằng cách nhìn vào mô hình đó.</p>
+    </div>
+  </div>
+
+  <!-- ============ SECTION V: AIRPLANE MODEL ============ -->
+  <div class="section fade-in" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Phép loại suy: Mô hình máy bay</h2>
+    </div>
+
+    <div class="card">
+      <h3>Tại sao xây dựng mô hình máy bay trước khi chế tạo máy bay thật?</h3>
+      <ul>
+        <li>Máy bay thật rất <strong>phức tạp</strong>.</li>
+        <li>Xây dựng mô hình <strong>đơn giản hơn</strong>, <strong>bỏ qua các chi tiết phức tạp</strong> (đây chính là <span class="tip" data-tip="Trừu tượng hóa: Quá trình loại bỏ các chi tiết không cần thiết để tập trung vào những điều quan trọng nhất."><strong>abstraction - trừu tượng hóa</strong></span>).</li>
+        <li>Mô hình vẫn cho phép hình dung các chi tiết cần thiết và dùng để <strong>giao tiếp</strong> với các bên liên quan.</li>
+      </ul>
+    </div>
+
+    <div class="card card-blue">
+      <h3>Mô tả hiện thực (describes reality)</h3>
+      <p>Mô hình máy bay mô tả chiếc máy bay thực tế, nhưng ở mức độ trừu tượng, chỉ thể hiện các chi tiết <strong>essential (thiết yếu)</strong> và lọc bỏ các chi tiết <strong>non-essential (không thiết yếu)</strong>.</p>
+    </div>
+  </div>
+
+  <!-- ============ SECTION VI: BENEFITS ============ -->
+  <div class="section fade-in" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Lợi ích của mô hình trong phát triển phần mềm</h2>
+    </div>
+
+    <div class="card">
+      <ul>
+        <li><strong>Tập trung vào bức tranh lớn (big picture):</strong> Tất cả các đối tượng quan trọng trong hệ thống.</li>
+        <li><strong>Đây chính là <span class="tip" data-tip="Lập trình quy mô lớn: Thiết kế và tổ chức hệ thống phần mềm ở mức cao, thay vì tập trung vào từng dòng code.">programming-in-the-large (lập trình quy mô lớn)</span>.</strong></li>
+        <li><strong>Xử lý sự phức tạp:</strong> Thay vì nói về mã nguồn (<strong>source code</strong>) phức tạp, ta xây dựng mô hình để nắm bắt các đối tượng quan trọng.</li>
+      </ul>
+    </div>
+
+    <div class="card card-green">
+      <h3>Kết quả đạt được</h3>
+      <ul>
+        <li>Hiểu rõ hơn các <strong>yêu cầu</strong> của sản phẩm.</li>
+        <li>Cải thiện <strong>thiết kế (design)</strong>.</li>
+        <li>Hệ thống phần mềm <strong>dễ bảo trì hơn (more maintainable)</strong>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ SECTION VII: OO MODELING ============ -->
+  <div class="section fade-in" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>Tại sao là Mô hình hóa hướng đối tượng?</h2>
+    </div>
+
+    <div class="card card-accent">
+      <h3>Tự nhiên (natural)</h3>
+      <p>Rất tự nhiên khi biểu diễn mọi thứ bằng các đối tượng.</p>
+    </div>
+
+    <div class="card">
+      <h3>Ví dụ trong lĩnh vực ứng dụng (application domain)</h3>
+      <p>Có các <strong>organizations (tổ chức)</strong>, <strong>people (con người)</strong>, <strong>cars (xe ô tô)</strong>. Con người làm việc cho tổ chức và sở hữu xe.</p>
+
+      <div class="diagram-box" style="margin-top:14px;">
+        <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.82rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:16px;">Ánh xạ từ thế giới thực → Mô hình OO</div>
+        <div class="diagram-row">
+          <div class="diagram-node">Organization</div>
+          <div class="diagram-arrow">←<span>works for</span></div>
+          <div class="diagram-node diagram-node-blue">Person</div>
+          <div class="diagram-arrow"><span>owns</span>→</div>
+          <div class="diagram-node diagram-node-green">Car</div>
+        </div>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:12px;">Các mối quan hệ được thể hiện bằng <strong>associations (liên kết)</strong></p>
+      </div>
+    </div>
+
+    <div class="card card-blue">
+      <h3>Lợi ích</h3>
+      <p>Giảm khoảng cách (<strong>reduce the gap</strong>) giữa <strong>application domain (lĩnh vực ứng dụng)</strong> và <strong>model (mô hình)</strong>. Giúp biểu diễn cách con người suy nghĩ về hiện thực một cách tốt hơn.</p>
+    </div>
+  </div>
+
+  <!-- ============ SECTION VIII: REQ VS SOLUTION ============ -->
+  <div class="section fade-in" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>Requirement Model vs. Solution Model</h2>
+    </div>
+
+    <p style="margin-bottom:16px; color:var(--text-muted);">Trong mô hình hóa hướng đối tượng, có hai loại mô hình chính:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tiêu chí</th>
+            <th>Requirement Model (Mô hình yêu cầu)</th>
+            <th>Solution Model (Mô hình giải pháp)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Mục đích</strong></td>
+            <td>Nắm bắt tất cả <strong>data requirements (yêu cầu dữ liệu)</strong>, tất cả các đối tượng và khái niệm quan trọng cần theo dõi trong hệ thống.</td>
+            <td>Mô hình sẽ được sử dụng để <strong>implementation (cài đặt)</strong>.</td>
+          </tr>
+          <tr>
+            <td><strong>Liên quan đến implementation?</strong></td>
+            <td><strong>KHÔNG liên quan gì đến implementation.</strong> Chỉ tập trung vào lĩnh vực ứng dụng.</td>
+            <td><strong>CÓ liên quan trực tiếp đến implementation.</strong> Đây là mô hình để viết code.</td>
+          </tr>
+          <tr>
+            <td><strong>Mức độ phức tạp</strong></td>
+            <td>Đơn giản hơn, chỉ mô tả những gì tồn tại trong lĩnh vực ứng dụng.</td>
+            <td>Chi tiết hơn, hướng đến việc chuyển đổi thành <strong>source code (mã nguồn)</strong> và <strong>code objects (các đối tượng trong code)</strong>.</td>
+          </tr>
+          <tr>
+            <td><strong>Vai trò trong khóa học</strong></td>
+            <td><strong>Trọng tâm của bài giảng này.</strong></td>
+            <td>Sẽ được học trong các bài sau (về thiết kế).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note-box">
+      <div class="note-box-title">📌 Lưu ý quan trọng</div>
+      <p>Các khái niệm OO có thể được sử dụng ở <strong>tất cả các cấp độ</strong>.</p>
+    </div>
+  </div>
+
+  <!-- ============ SECTION: EXAMPLES ============ -->
+  <div class="section fade-in" id="s-example">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2>Ví dụ minh họa</h2>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        💡 Sự cần thiết của mô hình
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <p>Câu chuyện "hiểu lầm" trong dự án: <strong>khách hàng → trưởng dự án → analyst → lập trình viên → chuyên gia tư vấn → tài liệu (không có) → nhu cầu thực sự (rất đơn giản)</strong>. Tất cả đều do thiếu một mô hình chung để giao tiếp.</p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        ✈️ Abstraction qua mô hình máy bay
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <p>Mô hình máy bay bằng nhựa hoặc bản vẽ 2D bỏ qua chi tiết động cơ, hệ thống điện, nhưng vẫn thể hiện được hình dáng, cánh, đuôi → đủ để giao tiếp với khách hàng về thiết kế tổng thể.</p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        🎓 OO modeling tự nhiên
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <p>Trong hệ thống quản lý trường học: có <code>SinhVien</code> (đối tượng), <code>GiaoVien</code> (đối tượng), <code>LopHoc</code> (đối tượng). <code>SinhVien</code> "học tại" <code>LopHoc</code>, <code>GiaoVien</code> "giảng dạy" <code>LopHoc</code>. Điều này rất tự nhiên và dễ hiểu.</p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        ⚖️ Requirement vs. Solution
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <p><strong>Requirement model:</strong> Có khái niệm <code>NguoiDung</code> (người dùng) vì trong lĩnh vực ứng dụng có người dùng.</p>
+        <p style="margin-top:8px;"><strong>Solution model:</strong> Có thể tách thành các class cụ thể hơn như <code>Admin</code>, <code>KhachHang</code>, <code>NhanVien</code> tùy theo cách thiết kế để cài đặt.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SECTION: IMPORTANT NOTES ============ -->
+  <div class="section fade-in" id="s-note">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2>Ghi chú quan trọng</h2>
+    </div>
+
+    <div class="note-box">
+      <div class="note-box-title">📌 UML là ngôn ngữ mô hình hóa, KHÔNG phải là phương pháp luận phát triển</div>
+      <p>Nó chỉ cung cấp các ký hiệu và quy tắc để vẽ sơ đồ, không hướng dẫn các bước phát triển phần mềm.</p>
+    </div>
+
+    <div class="note-box">
+      <div class="note-box-title">📌 Mô hình là công cụ giao tiếp</div>
+      <p>Mục đích chính của mô hình là để <strong>giúp các bên liên quan hiểu nhau</strong>, không chỉ để lưu trữ thông tin.</p>
+    </div>
+
+    <div class="note-box">
+      <div class="note-box-title">📌 Abstraction là chìa khóa</div>
+      <p>Mô hình cần <strong>bỏ qua các chi tiết không thiết yếu</strong> để tập trung vào bức tranh lớn. Một mô hình quá chi tiết cũng phức tạp như mã nguồn và không còn tác dụng.</p>
+    </div>
+
+    <div class="note-box">
+      <div class="note-box-title">📌 Phân biệt rõ ràng Requirement Model và Solution Model</div>
+      <p>Đây là một điểm cực kỳ quan trọng. Requirement model mô tả <strong>cái gì (what)</strong> trong thế giới thực. Solution model mô tả <strong>làm thế nào (how)</strong> để cài đặt nó trong phần mềm.</p>
+    </div>
+
+    <div class="note-box">
+      <div class="note-box-title">📌 Class Diagram là công cụ chính cho yêu cầu dữ liệu</div>
+      <p>Trong bài giảng này, class diagram được dùng cho requirement model, tập trung vào việc xác định các đối tượng và mối quan hệ của chúng trong lĩnh vực ứng dụng.</p>
+    </div>
+  </div>
+
+  <!-- ============ FLASHCARD SECTION ============ -->
+  <div class="section fade-in" id="s-flash">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <h2>Flashcard ôn tập</h2>
+    </div>
+    <p style="color:var(--text-muted); margin-bottom:16px; font-size:0.92rem;">Bấm vào thẻ để xem định nghĩa ↓</p>
+
+    <div class="flashcard-grid">
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <div class="term">UML</div>
+            <div class="hint">Bấm để lật →</div>
+          </div>
+          <div class="flashcard-back">
+            <div class="def">Unified Modeling Language – Ngôn ngữ mô hình hóa trực quan, đa mục đích, chuẩn công nghiệp cho hệ thống hướng đối tượng.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <div class="term">Class Diagram</div>
+            <div class="hint">Bấm để lật →</div>
+          </div>
+          <div class="flashcard-back">
+            <div class="def">Biểu đồ lớp – Nắm bắt data requirements dưới dạng tập hợp objects và relationships giữa chúng.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <div class="term">Abstraction</div>
+            <div class="hint">Bấm để lật →</div>
+          </div>
+          <div class="flashcard-back">
+            <div class="def">Trừu tượng hóa – Bỏ qua các chi tiết không thiết yếu để tập trung vào bức tranh lớn.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <div class="term">Requirement Model</div>
+            <div class="hint">Bấm để lật →</div>
+          </div>
+          <div class="flashcard-back">
+            <div class="def">Mô hình yêu cầu – Nắm bắt objects trong lĩnh vực ứng dụng, KHÔNG liên quan đến implementation.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <div class="term">Solution Model</div>
+            <div class="hint">Bấm để lật →</div>
+          </div>
+          <div class="flashcard-back">
+            <div class="def">Mô hình giải pháp – Mô hình để implementation, chuyển thành source code và code objects.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <div class="term">Association</div>
+            <div class="hint">Bấm để lật →</div>
+          </div>
+          <div class="flashcard-back">
+            <div class="def">Liên kết – Mối quan hệ giữa các objects trong UML, ví dụ: Person "works for" Organization.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ QUIZ SECTION ============ -->
+  <div class="section fade-in" id="s-quiz">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <h2>Quiz kiểm tra</h2>
+    </div>
+    <p style="color:var(--text-muted); margin-bottom:12px; font-size:0.92rem;">Tất cả câu hỏi đều dựa trên nội dung bài giảng.</p>
+
+    <div class="quiz-box" id="quizBox">
+      <div class="quiz-num" id="quizNum">Câu 1 / 6</div>
+      <div class="quiz-question" id="quizQ"></div>
+      <div class="quiz-options" id="quizOpts"></div>
+      <div class="quiz-feedback" id="quizFb"></div>
+      <div class="quiz-nav">
+        <button class="btn btn-primary" id="quizNext" onclick="nextQuestion()" style="display:none;">Câu tiếp →</button>
+        <div class="quiz-score" id="quizScore"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SUMMARY SECTION ============ -->
+  <div class="section fade-in" id="s-summary">
+    <div class="section-header">
+      <span class="section-num">13</span>
+      <h2>Tổng kết – Những điều cần nắm</h2>
+    </div>
+
+    <div class="summary-list">
+      <div class="summary-item">
+        <div class="summary-num">1</div>
+        <div class="summary-content">
+          <strong>UML (Unified Modeling Language)</strong> là một <strong>ngôn ngữ mô hình hóa trực quan, đa mục đích</strong>, chuẩn công nghiệp, trung lập về phương pháp luận, rất phù hợp cho mô hình hóa hướng đối tượng nhưng cũng có thể dùng cho hệ thống không hướng đối tượng.
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">2</div>
+        <div class="summary-content">
+          <strong>Ba loại biểu đồ UML chính trong khóa học:</strong>
+          <ul style="margin-top:8px; padding-left:18px;">
+            <li><strong>Class Diagram:</strong> Nắm bắt <strong>yêu cầu dữ liệu</strong> (các đối tượng và quan hệ).</li>
+            <li><strong>Use-case Diagram:</strong> Nắm bắt <strong>chức năng</strong> của hệ thống.</li>
+            <li><strong>State Machine Diagram:</strong> Nắm bắt <strong>các trạng thái</strong> của một đối tượng.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">3</div>
+        <div class="summary-content">
+          <strong>Lý do xây dựng mô hình:</strong> Giải quyết vấn đề <strong>giao tiếp</strong> giữa các bên liên quan, giúp mọi người có cùng một ý tưởng thông qua mô hình trực quan. Mô hình sử dụng <strong>abstraction (trừu tượng hóa)</strong> để bỏ qua chi tiết phức tạp, tập trung vào bức tranh lớn.
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">4</div>
+        <div class="summary-content">
+          <strong>Lợi ích của mô hình:</strong> Hiểu rõ yêu cầu hơn, cải thiện thiết kế, tạo ra hệ thống dễ bảo trì hơn, giúp xử lý độ phức tạp (đây là bản chất của <strong>programming-in-the-large</strong>).
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">5</div>
+        <div class="summary-content">
+          <strong>Phân biệt quan trọng giữa hai loại mô hình:</strong>
+          <ul style="margin-top:8px; padding-left:18px;">
+            <li><strong>Requirement Model:</strong> Nắm bắt các đối tượng trong <strong>lĩnh vực ứng dụng</strong>, <strong>không liên quan đến implementation</strong>.</li>
+            <li><strong>Solution Model:</strong> Mô hình dùng để <strong>cài đặt</strong>, sẽ được chuyển thành mã nguồn.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">6</div>
+        <div class="summary-content">
+          <strong>Mô hình hướng đối tượng tự nhiên hơn:</strong> Vì nó ánh xạ trực tiếp các khái niệm trong thế giới thực (người, tổ chức, xe cộ...) thành các <strong>objects (đối tượng)</strong> và các <strong>associations (liên kết)</strong> giữa chúng, giúp giảm khoảng cách giữa thế giới thực và mô hình.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page-wrapper -->
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="page-wrapper">
+    Lecture 2-1 · Introduction to UML and Class Diagrams · Tài liệu học tập tương tác
+  </div>
+</footer>
+
+<!-- =============================================
+     JAVASCRIPT
+============================================= -->
+<script>
+  /* ---------- Dark Mode ---------- */
+  function toggleDark() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('darkBtn').textContent = isDark ? '🌙 Dark Mode' : '☀️ Light Mode';
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  }
+  // Restore theme
+  (function() {
+    const t = localStorage.getItem('theme');
+    if (t === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('darkBtn').textContent = '☀️ Light Mode';
+      });
+    }
+  })();
+
+  /* ---------- Progress Bar ---------- */
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docH > 0 ? (scrollTop / docH) * 100 : 0;
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+
+  /* ---------- Accordion ---------- */
+  function toggleAcc(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    btn.classList.toggle('open', !isOpen);
+    body.classList.toggle('open', !isOpen);
+  }
+
+  /* ---------- Tabs ---------- */
+  function openTab(btn, panelId) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(panelId).classList.add('active');
+  }
+
+  /* ---------- Fade-in on scroll ---------- */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  /* ---------- QUIZ ---------- */
+  const quizData = [
+    {
+      q: "UML là viết tắt của cụm từ nào?",
+      opts: ["Universal Markup Language", "Unified Modeling Language", "Unified Management Language", "Universal Modeling Language"],
+      ans: 1,
+      explain: "UML là viết tắt của Unified Modeling Language – Ngôn ngữ mô hình hóa thống nhất."
+    },
+    {
+      q: "UML có phải là một software development methodology (phương pháp luận phát triển phần mềm) không?",
+      opts: ["Có, UML là một phương pháp luận phát triển", "Không, UML chỉ là ngôn ngữ để mô hình hóa", "Có, nhưng chỉ áp dụng cho hệ thống OO", "Không, UML không thể dùng cho hệ thống OO"],
+      ans: 1,
+      explain: "UML KHÔNG phải là một software development methodology. Nó chỉ là ngôn ngữ để mô hình hóa, trung lập về phương pháp luận phát triển."
+    },
+    {
+      q: "Trong khóa học này, loại biểu đồ nào dùng để nắm bắt các functionalities (chức năng) của hệ thống?",
+      opts: ["Class Diagram", "State Machine Diagram", "Use-case Diagram", "Deployment Diagram"],
+      ans: 2,
+      explain: "Use-case Diagram được dùng để nắm bắt tất cả functionalities (chức năng) mà hệ thống cung cấp."
+    },
+    {
+      q: "Mục đích chính của việc xây dựng mô hình (model) trong phát triển phần mềm là gì?",
+      opts: ["Để tạo ra source code nhanh hơn", "Để giải quyết vấn đề giao tiếp giữa các stakeholders", "Để thay thế tài liệu kỹ thuật", "Để kiểm tra hiệu năng hệ thống"],
+      ans: 1,
+      explain: "Vấn đề cốt lõi là giao tiếp (communication). Mô hình giúp tất cả các bên liên quan (stakeholders) có thể thống nhất ý tưởng bằng cách nhìn vào mô hình chung."
+    },
+    {
+      q: "Requirement Model khác Solution Model ở điểm nào quan trọng nhất?",
+      opts: ["Requirement Model phức tạp hơn Solution Model", "Requirement Model KHÔNG liên quan đến implementation; Solution Model có liên quan trực tiếp", "Requirement Model chỉ dùng cho hệ thống non-OO", "Requirement Model là mô hình cuối cùng được viết thành code"],
+      ans: 1,
+      explain: "Requirement Model KHÔNG liên quan gì đến implementation – chỉ tập trung vào lĩnh vực ứng dụng. Solution Model CÓ liên quan trực tiếp đến implementation và sẽ được chuyển thành source code."
+    },
+    {
+      q: "Khái niệm 'abstraction' (trừu tượng hóa) trong mô hình hóa có nghĩa là gì?",
+      opts: ["Thêm tất cả các chi tiết kỹ thuật vào mô hình", "Bỏ qua các chi tiết không thiết yếu để tập trung vào bức tranh lớn", "Chuyển mô hình thành source code", "Sử dụng nhiều loại biểu đồ khác nhau"],
+      ans: 1,
+      explain: "Abstraction là quá trình bỏ qua các chi tiết non-essential (không thiết yếu) để tập trung vào các chi tiết essential (thiết yếu), giúp nắm bắt bức tranh lớn của hệ thống."
+    }
+  ];
+
+  let currentQ = 0;
+  let score = 0;
+  let answered = false;
+
+  function renderQuestion() {
+    const q = quizData[currentQ];
+    document.getElementById('quizNum').textContent = `Câu ${currentQ + 1} / ${quizData.length}`;
+    document.getElementById('quizQ').textContent = q.q;
+    const optsEl = document.getElementById('quizOpts');
+    optsEl.innerHTML = '';
+    q.opts.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-option';
+      btn.textContent = opt;
+      btn.onclick = () => checkAnswer(i);
+      optsEl.appendChild(btn);
+    });
+    document.getElementById('quizFb').className = 'quiz-feedback';
+    document.getElementById('quizFb').textContent = '';
+    document.getElementById('quizNext').style.display = 'none';
+    document.getElementById('quizScore').textContent = `Điểm: ${score}/${quizData.length}`;
+    answered = false;
+  }
+
+  function checkAnswer(i) {
+    if (answered) return;
+    answered = true;
+    const q = quizData[currentQ];
+    const opts = document.querySelectorAll('.quiz-option');
+    opts.forEach(b => b.disabled = true);
+    const fb = document.getElementById('quizFb');
+    if (i === q.ans) {
+      opts[i].classList.add('correct');
+      score++;
+      fb.className = 'quiz-feedback correct show';
+      fb.textContent = '✅ Đúng! ' + q.explain;
+    } else {
+      opts[i].classList.add('wrong');
+      opts[q.ans].classList.add('correct');
+      fb.className = 'quiz-feedback wrong show';
+      fb.textContent = '❌ Chưa đúng. ' + q.explain;
+    }
+    document.getElementById('quizScore').textContent = `Điểm: ${score}/${quizData.length}`;
+    if (currentQ < quizData.length - 1) {
+      document.getElementById('quizNext').style.display = 'inline-block';
+      document.getElementById('quizNext').textContent = 'Câu tiếp →';
+    } else {
+      document.getElementById('quizNext').style.display = 'inline-block';
+      document.getElementById('quizNext').textContent = '🔄 Làm lại';
+      document.getElementById('quizNext').onclick = resetQuiz;
+    }
+  }
+
+  function nextQuestion() {
+    currentQ++;
+    document.getElementById('quizNext').onclick = nextQuestion;
+    renderQuestion();
+  }
+
+  function resetQuiz() {
+    currentQ = 0;
+    score = 0;
+    document.getElementById('quizNext').onclick = nextQuestion;
+    renderQuestion();
+  }
+
+  // Init quiz
+  renderQuestion();
+</script>
+
+</body>
+</html>
