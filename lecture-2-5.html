@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lecture 2-5 – Generalization</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f2ec; --surface: #ffffff; --surface2: #eee9e0;
+      --border: #d6cfc3; --text: #1a1714; --text-muted: #6b6358;
+      --accent: #c8501a; --accent2: #2a6dd9; --accent3: #1a8a4a;
+      --highlight: #fff3cd; --highlight-border: #f5c842;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --radius: 12px; --radius-sm: 6px;
+    }
+    [data-theme="dark"] {
+      --bg: #121010; --surface: #1e1b18; --surface2: #2a2520;
+      --border: #3a3530; --text: #f0ebe3; --text-muted: #9a9080;
+      --accent: #e8704a; --accent2: #5a9bf5; --accent3: #4ac87a;
+      --highlight: #2a2200; --highlight-border: #a08020;
+      --shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.7; transition: background 0.3s, color 0.3s; }
+    strong { color: var(--accent); font-weight: 600; }
+    code { font-family: 'JetBrains Mono', monospace; background: var(--surface2); padding: 2px 7px; border-radius: 4px; font-size: 0.88em; color: var(--accent2); }
+    a { color: var(--accent2); text-decoration: none; }
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .page-wrapper { max-width: 900px; margin: 0 auto; padding: 0 20px 80px; }
+
+    .site-header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); }
+    .site-header .brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; letter-spacing: -0.02em; color: var(--accent); }
+    .dark-toggle { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; cursor: pointer; font-size: 0.82rem; font-family: 'DM Sans', sans-serif; color: var(--text); transition: all 0.2s; }
+    .dark-toggle:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); z-index: 200; transition: width 0.1s; }
+
+    .hero { padding: 60px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
+    .hero-label { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; background: var(--accent); color: #fff; padding: 4px 12px; border-radius: 4px; margin-bottom: 20px; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px; }
+    .hero h1 span { color: var(--accent); }
+    .hero-desc { font-size: 1.05rem; color: var(--text-muted); max-width: 620px; line-height: 1.7; }
+
+    .toc { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 20px 24px; margin: 32px 0; }
+    .toc-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+    .toc ol { padding-left: 20px; } .toc li { margin: 5px 0; font-size: 0.92rem; } .toc a { color: var(--accent2); } .toc a:hover { color: var(--accent); }
+
+    .section { margin-bottom: 52px; }
+    .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+    .section-num { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 500; color: var(--accent); background: var(--surface2); border: 1px solid var(--border); padding: 4px 10px; border-radius: 4px; white-space: nowrap; }
+    .section h2 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 26px; margin-bottom: 16px; box-shadow: var(--shadow); }
+    .card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 12px; }
+    .card p { margin-bottom: 10px; } .card p:last-child { margin-bottom: 0; }
+    .card ul, .card ol { padding-left: 20px; } .card li { margin: 6px 0; }
+    .card-highlight { border-left: 4px solid var(--highlight-border); background: var(--highlight); }
+    .card-accent { border-left: 4px solid var(--accent); }
+    .card-blue { border-left: 4px solid var(--accent2); }
+    .card-green { border-left: 4px solid var(--accent3); }
+
+    .tip { position: relative; cursor: help; border-bottom: 2px dashed var(--accent2); color: inherit; }
+    .tip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 0.78rem; line-height: 1.5; padding: 8px 12px; border-radius: 8px; width: 220px; text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 50; font-family: 'DM Sans', sans-serif; }
+    .tip::before { content: ''; position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--text); opacity: 0; transition: opacity 0.2s; z-index: 50; }
+    .tip:hover::after, .tip:hover::before { opacity: 1; }
+
+    .accordion { margin-bottom: 10px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+    .accordion-btn { width: 100%; background: var(--surface); border: none; padding: 16px 20px; text-align: left; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.97rem; font-weight: 500; color: var(--text); display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: background 0.2s; }
+    .accordion-btn:hover { background: var(--surface2); } .accordion-btn.open { background: var(--surface2); color: var(--accent); }
+    .accordion-icon { font-size: 1.2rem; transition: transform 0.3s; flex-shrink: 0; color: var(--accent); }
+    .accordion-btn.open .accordion-icon { transform: rotate(180deg); }
+    .accordion-body { background: var(--surface); max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s; padding: 0 20px; }
+    .accordion-body.open { max-height: 900px; padding: 18px 20px; border-top: 1px solid var(--border); }
+    .accordion-body p, .accordion-body li { font-size: 0.95rem; }
+    .accordion-body ul, .accordion-body ol { padding-left: 18px; } .accordion-body li { margin: 6px 0; }
+
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; background: var(--surface); border-radius: var(--radius); overflow: hidden; }
+    th { background: var(--surface2); padding: 12px 16px; text-align: left; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+    td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; } tr:hover td { background: var(--surface2); }
+
+    .tabs-wrapper { margin-bottom: 16px; }
+    .tab-list { display: flex; gap: 4px; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+    .tab-btn { background: none; border: none; padding: 10px 18px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500; color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+    .tab-btn:hover { color: var(--accent); background: var(--surface2); } .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--surface); }
+    .tab-panel { display: none; background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); padding: 22px; }
+    .tab-panel.active { display: block; }
+
+    .note-box { background: var(--highlight); border: 1px solid var(--highlight-border); border-radius: var(--radius); padding: 18px 22px; margin: 16px 0; font-size: 0.94rem; }
+    .note-box-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--highlight-border); margin-bottom: 8px; }
+    [data-theme="dark"] .note-box-title { color: #c8a030; }
+
+    /* Inheritance tree visual */
+    .inherit-tree { display: flex; flex-direction: column; align-items: center; gap: 0; margin: 20px 0; }
+    .i-node { background: var(--surface); border: 2px solid var(--accent); border-radius: 8px; padding: 10px 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; color: var(--accent); text-align: center; min-width: 140px; }
+    .i-node-italic { border-color: var(--accent2); color: var(--accent2); font-style: italic; }
+    .i-node-child { border-color: var(--accent3); color: var(--accent3); }
+    .i-connector { display: flex; flex-direction: column; align-items: center; }
+    .i-line-v { width: 2px; height: 20px; background: var(--border); }
+    .i-triangle { width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 16px solid var(--border); }
+    .i-branch { display: flex; align-items: flex-start; justify-content: center; gap: 20px; width: 100%; }
+    .i-branch-item { display: flex; flex-direction: column; align-items: center; }
+    .i-line-h-wrap { display: flex; align-items: center; justify-content: center; width: 100%; position: relative; height: 2px; background: var(--border); margin-bottom: 0; }
+    .i-discriminator { font-family: 'DM Sans', sans-serif; font-size: 0.75rem; color: var(--text-muted); background: var(--surface2); padding: 2px 8px; border-radius: 4px; margin: 4px 0; }
+    .constraint-tag { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; background: var(--surface2); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; color: var(--accent2); margin: 4px 2px; }
+
+    .flashcard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 16px; }
+    .flashcard { perspective: 800px; cursor: pointer; height: 170px; }
+    .flashcard-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); border-radius: var(--radius); }
+    .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-front, .flashcard-back { position: absolute; inset: 0; backface-visibility: hidden; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px; text-align: center; border: 1px solid var(--border); }
+    .flashcard-front { background: var(--surface); }
+    .flashcard-back { background: var(--accent); color: #fff; transform: rotateY(180deg); }
+    .flashcard-front .term { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 8px; color: var(--text); }
+    .flashcard-front .hint { font-size: 0.75rem; color: var(--text-muted); }
+    .flashcard-back .def { font-size: 0.83rem; line-height: 1.5; }
+
+    .quiz-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-top: 16px; }
+    .quiz-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
+    .quiz-question { font-weight: 600; font-size: 1rem; margin-bottom: 16px; }
+    .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-option { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; cursor: pointer; font-size: 0.92rem; color: var(--text); transition: all 0.2s; text-align: left; }
+    .quiz-option:hover:not(:disabled) { border-color: var(--accent2); background: var(--surface); }
+    .quiz-option.correct { background: #d4fce6; border-color: var(--accent3); color: #0a4a20; }
+    .quiz-option.wrong { background: #fce4d4; border-color: var(--accent); color: #4a1000; }
+    [data-theme="dark"] .quiz-option.correct { background: #0a2a18; color: #4ac87a; }
+    [data-theme="dark"] .quiz-option.wrong { background: #2a1008; color: #e8704a; }
+    .quiz-feedback { margin-top: 14px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.9rem; display: none; }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct { background: #d4fce6; color: #0a4a20; border: 1px solid var(--accent3); }
+    .quiz-feedback.wrong { background: #fce4d4; color: #4a1000; border: 1px solid var(--accent); }
+    [data-theme="dark"] .quiz-feedback.correct { background: #0a2a18; color: #4ac87a; border-color: var(--accent3); }
+    [data-theme="dark"] .quiz-feedback.wrong { background: #2a1008; color: #e8704a; border-color: var(--accent); }
+    .quiz-nav { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
+    .btn { padding: 9px 20px; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid var(--border); background: var(--surface2); color: var(--text); }
+    .btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); } .btn-primary:hover { opacity: 0.85; }
+    .quiz-score { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); margin-left: auto; }
+
+    .summary-list { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+    .summary-item { display: flex; gap: 14px; align-items: flex-start; padding: 14px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+    .summary-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--accent); line-height: 1; flex-shrink: 0; min-width: 32px; }
+    .summary-content { font-size: 0.93rem; }
+
+    .site-footer { border-top: 1px solid var(--border); padding: 32px 20px; text-align: center; font-size: 0.82rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.5s; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* Constraint grid */
+    .constraint-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .constraint-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+    .constraint-card.blue { border-left: 4px solid var(--accent2); }
+    .constraint-card.green { border-left: 4px solid var(--accent3); }
+    .constraint-card.orange { border-left: 4px solid var(--accent); }
+    .constraint-card.purple { border-left: 4px solid #9b59b6; }
+    .constraint-card h4 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.92rem; margin-bottom: 8px; }
+    .constraint-card p { font-size: 0.88rem; color: var(--text-muted); }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 1.8rem; }
+      .flashcard-grid { grid-template-columns: 1fr 1fr; }
+      .constraint-grid { grid-template-columns: 1fr; }
+      .section h2 { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<header class="site-header">
+  <div class="brand">UML · Lecture 2-5</div>
+  <button class="dark-toggle" onclick="toggleDark()" id="darkBtn">🌙 Dark Mode</button>
+</header>
+
+<div class="page-wrapper">
+
+  <!-- HERO -->
+  <div class="hero fade-in">
+    <div class="hero-label">Lecture 2-5</div>
+    <h1>Class Diagram:<br><span>Generalization</span></h1>
+    <p class="hero-desc">
+      Bài giảng này giải thích về <strong>Generalization (Tổng quát hóa)</strong> – còn gọi là <strong>Inheritance (Kế thừa)</strong> – một mối quan hệ giữa các class <strong>cùng loại (same kind)</strong>. Bao gồm: cách thực hiện từ top-down/bottom-up, overriding, abstract class, và các ràng buộc disjoint/overlapping, complete/incomplete.
+    </p>
+
+    <div class="toc">
+      <div class="toc-title">📋 Mục lục</div>
+      <ol>
+        <li><a href="#s1">Định nghĩa Generalization</a></li>
+        <li><a href="#s2">Hai cách tiếp cận: Specialization & Generalization</a></li>
+        <li><a href="#s3">Lợi ích của Inheritance</a></li>
+        <li><a href="#s4">Overriding (Ghi đè)</a></li>
+        <li><a href="#s5">Multi-level Inheritance & Khuyến nghị</a></li>
+        <li><a href="#s6">Xử lý ràng buộc Multiplicity khi có Generalization</a></li>
+        <li><a href="#s7">Abstract Class (Lớp trừu tượng)</a></li>
+        <li><a href="#s8">Các ràng buộc của Generalization</a></li>
+        <li><a href="#s-example">Ví dụ minh họa</a></li>
+        <li><a href="#s-note">Ghi chú quan trọng</a></li>
+        <li><a href="#s-flash">Flashcard ôn tập</a></li>
+        <li><a href="#s-quiz">Quiz kiểm tra</a></li>
+        <li><a href="#s-summary">Tổng kết</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- SECTION 1: ĐỊNH NGHĨA -->
+  <div class="section fade-in" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Định nghĩa Generalization (Tổng quát hóa)</h2>
+    </div>
+
+    <div class="card card-accent">
+      <h3>Định nghĩa</h3>
+      <p>Generalization là một mối quan hệ giữa các class <strong>cùng loại (of the same kind)</strong>. Ta có thể <strong>specialize (chuyên biệt hóa)</strong> một class thành các <strong>subclasses (lớp con)</strong> khác nhau.</p>
+    </div>
+
+    <div class="card card-blue">
+      <h3>Ký hiệu trong UML</h3>
+      <p>Một <strong>tam giác rỗng (triangle)</strong> hướng về phía <strong>superclass (lớp cha)</strong>. Các <strong>subclasses (lớp con)</strong> nối vào cạnh đáy của tam giác.</p>
+
+      <!-- Visual của inheritance -->
+      <div style="background:var(--surface2); border-radius:var(--radius); padding:24px; margin-top:14px; text-align:center;">
+        <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:16px;">Ký hiệu Generalization</div>
+        <!-- Superclass -->
+        <div style="display:flex; justify-content:center; margin-bottom:0;">
+          <div class="i-node">Account<br><small style="font-family:'DM Sans',sans-serif;font-size:0.7rem;color:var(--text-muted);">(superclass)</small></div>
+        </div>
+        <!-- Triangle & line -->
+        <div style="display:flex; justify-content:center; flex-direction:column; align-items:center; gap:0; margin:0;">
+          <div style="width:2px; height:14px; background:var(--border);"></div>
+          <div style="width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:18px solid var(--border);"></div>
+          <div style="width:2px; height:14px; background:var(--border);"></div>
+        </div>
+        <!-- Horizontal branch line -->
+        <div style="display:flex; justify-content:center;">
+          <div style="display:flex; align-items:flex-start; gap:40px;">
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="width:2px;height:16px;background:var(--border);"></div>
+              <div class="i-node i-node-child">CheckingAccount<br><small style="font-family:'DM Sans',sans-serif;font-size:0.7rem;color:var(--accent3);">(subclass)</small></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="width:2px;height:16px;background:var(--border);"></div>
+              <div class="i-node i-node-child">SavingAccount<br><small style="font-family:'DM Sans',sans-serif;font-size:0.7rem;color:var(--accent3);">(subclass)</small></div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:14px;">Tam giác rỗng chỉ hướng lên phía superclass</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: HAI CÁCH TIẾP CẬN -->
+  <div class="section fade-in" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Hai cách tiếp cận Generalization</h2>
+    </div>
+
+    <div class="tabs-wrapper">
+      <div class="tab-list">
+        <button class="tab-btn active" onclick="openTab(this,'tab-topdown')">⬇️ Top-down (Specialization)</button>
+        <button class="tab-btn" onclick="openTab(this,'tab-bottomup')">⬆️ Bottom-up (Generalization)</button>
+      </div>
+      <div class="tab-panel active" id="tab-topdown">
+        <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:12px;">Specialization (Chuyên biệt hóa)</h3>
+        <p><strong>Hướng: Top-down (từ trên xuống)</strong></p>
+        <p style="margin-top:8px;">Bắt đầu từ class tổng quát, phân rã thành các class con chuyên biệt hơn. Sử dụng <span class="tip" data-tip="Bộ phân biệt: Tiêu chí dùng để phân loại các instance vào các subclass tương ứng."><strong>discriminator (bộ phân biệt)</strong></span> để phân loại.</p>
+        <div class="note-box" style="margin-top:12px;">
+          <div class="note-box-title">Ví dụ</div>
+          <p><code>Account</code> (discriminator: <code>accountType</code>) → <code>CheckingAccount</code> và <code>SavingAccount</code>.</p>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-bottomup">
+        <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:12px;">Generalization (Tổng quát hóa)</h3>
+        <p><strong>Hướng: Bottom-up (từ dưới lên)</strong></p>
+        <p style="margin-top:8px;">Nhận thấy hai class có nhiều điểm tương đồng, tạo ra một superclass chung tổng quát hơn.</p>
+        <div class="note-box" style="margin-top:12px;">
+          <div class="note-box-title">Ví dụ</div>
+          <p><code>BankAccount</code> và <code>CreditCardAccount</code> có chung <code>accountNumber</code>, <code>balance</code>, <code>balance()</code> → tổng quát thành <code>Account</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Cách tiếp cận</th><th>Hướng</th><th>Mô tả</th><th>Ví dụ</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Specialization (Chuyên biệt hóa)</strong></td>
+            <td>Top-down (từ trên xuống)</td>
+            <td>Bắt đầu từ class tổng quát, phân rã thành các class con chuyên biệt hơn. Sử dụng <strong>discriminator (bộ phân biệt)</strong> để phân loại.</td>
+            <td><code>Account</code> (discriminator: <code>accountType</code>) → <code>CheckingAccount</code> và <code>SavingAccount</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>Generalization (Tổng quát hóa)</strong></td>
+            <td>Bottom-up (từ dưới lên)</td>
+            <td>Nhận thấy hai class có nhiều điểm tương đồng, tạo ra một superclass chung tổng quát hơn.</td>
+            <td><code>BankAccount</code> và <code>CreditCardAccount</code> có chung <code>accountNumber</code>, <code>balance</code>, <code>balance()</code> → tổng quát thành <code>Account</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 3: LỢI ÍCH -->
+  <div class="section fade-in" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Lợi ích của Inheritance (Kế thừa)</h2>
+    </div>
+
+    <div class="card card-accent">
+      <h3>Trích xuất các thành phần chung</h3>
+      <p><strong>Trích xuất các thành phần chung (extract common attributes, relationships, operations):</strong> Đưa các thuộc tính, quan hệ và thao tác dùng chung lên <strong>superclass (lớp cha)</strong>.</p>
+      <p>Các thành phần dùng chung sẽ được tự động <strong>chia sẻ (shared)</strong> cho tất cả các <strong>subclasses (lớp con)</strong>.</p>
+    </div>
+
+    <div class="constraint-grid">
+      <div class="constraint-card blue">
+        <h4>1. Giảm trùng lặp</h4>
+        <p><strong>Reduce redundancy of description</strong> – Không cần định nghĩa lại các thuộc tính giống nhau ở từng subclass.</p>
+      </div>
+      <div class="constraint-card green">
+        <h4>2. Tăng tái sử dụng</h4>
+        <p><strong>Promote reusability of descriptions</strong> – Các thành phần ở superclass có thể được dùng lại ở nhiều subclass.</p>
+      </div>
+      <div class="constraint-card orange">
+        <h4>3. Đơn giản hóa sửa đổi</h4>
+        <p><strong>Simplify modification of descriptions</strong> – Sửa ở superclass một lần, tất cả subclass đều thay đổi theo.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: OVERRIDING -->
+  <div class="section fade-in" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Overriding (Ghi đè)</h2>
+    </div>
+
+    <div class="card card-blue">
+      <h3>Định nghĩa</h3>
+      <p>Khi một <strong>subclass (lớp con)</strong> định nghĩa lại một <strong>operation (thao tác)</strong> đã có ở <strong>superclass (lớp cha)</strong>.</p>
+      <p style="margin-top:8px;"><strong>Kết quả:</strong> Đối với instance của subclass, <strong>operation ở subclass sẽ được sử dụng thay vì operation ở superclass</strong>.</p>
+    </div>
+
+    <div class="card card-green">
+      <h3>Ví dụ</h3>
+      <ul>
+        <li><code>Account</code> có operation <code>withdraw()</code>.</li>
+        <li><code>CheckingAccount</code> (subclass) định nghĩa lại <code>withdraw()</code>.</li>
+        <li>Khi gọi <code>withdraw()</code> trên một <code>CheckingAccount</code>, phiên bản trong <code>CheckingAccount</code> sẽ được thực thi (ghi đè phiên bản trong <code>Account</code>).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 5: MULTI-LEVEL -->
+  <div class="section fade-in" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Multi-level Inheritance & Khuyến nghị</h2>
+    </div>
+
+    <div class="card">
+      <h3>Multi-level Inheritance (Kế thừa đa cấp)</h3>
+      <ul>
+        <li><strong>Multi-level inheritance:</strong> Có thể có nhiều cấp kế thừa (ví dụ: <code>Account</code> → <code>SavingAccount</code> → <code>CheckingSavingAccount</code>).</li>
+        <li><strong>Multiple inheritance (kế thừa đa lớp):</strong> Nằm ngoài phạm vi khóa học.</li>
+      </ul>
+    </div>
+
+    <div class="card card-highlight">
+      <h3>⚠️ Khuyến nghị thực tế</h3>
+      <ul>
+        <li><strong>Chỉ nên dùng tối đa 3-4 cấp kế thừa.</strong></li>
+        <li>Càng nhiều cấp, class diagram càng <strong>khó đọc và khó hiểu (difficult to read and understand)</strong>.</li>
+        <li>Cần đảm bảo tất cả các bên liên quan (stakeholders) đều dễ dàng hiểu được mô hình.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 6: MULTIPLICITY -->
+  <div class="section fade-in" id="s6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Xử lý ràng buộc Multiplicity khi có Generalization</h2>
+    </div>
+
+    <div class="card">
+      <h3>Vấn đề</h3>
+      <p>Các subclass có thể có <strong>multiplicities (bội số)</strong> khác nhau với cùng một class khác.</p>
+      <ul>
+        <li><strong>Ví dụ:</strong> <code>PGStudent</code> enrolls into <code>0..3</code> courses. <code>UGStudent</code> enrolls into <code>1..5</code> courses.</li>
+      </ul>
+    </div>
+
+    <div class="card card-green">
+      <h3>Giải pháp khi đưa lên superclass Student</h3>
+      <ul>
+        <li><strong>Relax (nới lỏng)</strong> multiplicity ở superclass thành <code>0..5</code> (phủ cả hai trường hợp).</li>
+        <li><strong>Thêm note (ghi chú)</strong> bên cạnh để ghi rõ ràng buộc cụ thể cho từng subclass.</li>
+        <li><code>{ PGStudent can enroll in 0..3 courses, UGStudent can enroll in 1..5 courses }</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 7: ABSTRACT CLASS -->
+  <div class="section fade-in" id="s7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>Abstract Class (Lớp trừu tượng)</h2>
+    </div>
+
+    <div class="card card-accent">
+      <h3>Định nghĩa</h3>
+      <p><strong>Abstract class</strong> là class <strong>không có instance trực tiếp (has no direct instances)</strong>.</p>
+      <p style="margin-top:8px;"><strong>Ký hiệu:</strong> Tên class được viết <strong><em>in nghiêng (italic)</em></strong>.</p>
+    </div>
+
+    <div class="card">
+      <h3>Ví dụ & Mục đích</h3>
+      <ul>
+        <li><code><em>Account</em></code> là abstract class. Tất cả instances đều là <code>CheckingAccount</code> hoặc <code>SavingAccount</code>, không có instance nào trực tiếp thuộc <code>Account</code>.</li>
+        <li><strong>Mục đích:</strong> Dùng cho <strong>mô hình hóa (modeling purpose)</strong>, thể hiện ý nghĩa rằng các subclass "đều là" (is-a) một loại của superclass, nhưng bản thân superclass chỉ là khái niệm trừu tượng.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 8: CONSTRAINTS -->
+  <div class="section fade-in" id="s8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>Các ràng buộc (Constraints) của Generalization</h2>
+    </div>
+
+    <p style="margin-bottom:16px; color:var(--text-muted);">Generalization có hai loại ràng buộc chính: <strong>Coverage (phạm vi)</strong> và <strong>Completeness (tính đầy đủ)</strong>.</p>
+
+    <!-- Coverage -->
+    <div class="card card-blue">
+      <h3>a. Coverage Constraints – Disjoint vs. Overlapping</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ràng buộc</th><th>Ý nghĩa</th><th>Ký hiệu</th><th>Ví dụ</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Disjoint (rời rạc)</strong></td>
+              <td>Một instance chỉ có thể thuộc về <strong>đúng một</strong> subclass. Không thể đồng thời thuộc nhiều subclass.</td>
+              <td><span class="constraint-tag">{disjoint}</span></td>
+              <td><code>Account</code>: <code>Personal</code> hoặc <code>Business</code> – không thể vừa là personal vừa là business.</td>
+            </tr>
+            <tr>
+              <td><strong>Overlapping (chồng lấn)</strong></td>
+              <td>Một instance có thể thuộc về <strong>nhiều subclass</strong> cùng lúc.</td>
+              <td><span class="constraint-tag">{overlapping}</span></td>
+              <td><code>Player</code>: có thể vừa chơi tennis vừa chơi soccer. <code>Course</code>: có thể vừa là UG course vừa là PG course.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Completeness -->
+    <div class="card card-green">
+      <h3>b. Completeness Constraints – Complete vs. Incomplete</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ràng buộc</th><th>Ý nghĩa</th><th>Ký hiệu</th><th>Ví dụ</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Complete (đầy đủ)</strong></td>
+              <td><strong>Tất cả</strong> các subclass có thể có đều đã được liệt kê. Không còn subclass nào khác.</td>
+              <td><span class="constraint-tag">{complete}</span></td>
+              <td><code>UniversityStudent</code>: chỉ có <code>UGStudent</code> và <code>PGStudent</code> – không còn loại sinh viên nào khác.</td>
+            </tr>
+            <tr>
+              <td><strong>Incomplete (không đầy đủ)</strong></td>
+              <td><strong>Chưa liệt kê hết</strong> các subclass. Vẫn có thể có các subclass khác.</td>
+              <td><span class="constraint-tag">{incomplete}</span></td>
+              <td><code>Tree</code>: có thể có các loại cây khác ngoài những loại đã vẽ. <code>Payment</code>: có thể có các phương thức khác ngoài cash, credit card, debit card.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tổng hợp -->
+    <div class="card">
+      <h3>Ví dụ tổng hợp về các ràng buộc</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ví dụ</th><th>Coverage</th><th>Completeness</th><th>Giải thích</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>Player</code> → <code>TennisPlayer</code>, <code>SoccerPlayer</code></td>
+              <td><span class="constraint-tag">{overlapping}</span></td>
+              <td><span class="constraint-tag">{incomplete}</span></td>
+              <td>Một người có thể chơi cả hai môn (overlapping). Vẫn có thể có các môn thể thao khác (incomplete).</td>
+            </tr>
+            <tr>
+              <td><code>Tree</code> → các loại cây</td>
+              <td><span class="constraint-tag">{disjoint}</span></td>
+              <td><span class="constraint-tag">{incomplete}</span></td>
+              <td>Một cây chỉ thuộc một loại (disjoint). Vẫn có thể có loại cây chưa liệt kê (incomplete).</td>
+            </tr>
+            <tr>
+              <td><code>Course</code> → <code>UGCourse</code>, <code>PGCourse</code></td>
+              <td><span class="constraint-tag">{overlapping}</span></td>
+              <td><span class="constraint-tag">{complete}</span></td>
+              <td>Một khóa học có thể phục vụ cả UG và PG (overlapping). Chỉ có hai loại này trong trường (complete).</td>
+            </tr>
+            <tr>
+              <td><code>UniversityStudent</code> → <code>UGStudent</code>, <code>PGStudent</code></td>
+              <td><span class="constraint-tag">{disjoint}</span></td>
+              <td><span class="constraint-tag">{complete}</span></td>
+              <td>Sinh viên chỉ là UG hoặc PG (disjoint). Chỉ có hai loại này (complete).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card card-highlight">
+      <h3>Ví dụ chi tiết về Payment (Thanh toán học phí)</h3>
+      <ul>
+        <li><strong>Coverage:</strong> <span class="constraint-tag">{overlapping}</span> – Có thể thanh toán một phần bằng tiền mặt, một phần bằng thẻ tín dụng.</li>
+        <li><strong>Completeness:</strong> <span class="constraint-tag">{incomplete}</span> – Vì còn có các phương thức khác như internet banking, chuyển khoản, v.v. chưa được liệt kê.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION: VÍ DỤ MINH HỌA -->
+  <div class="section fade-in" id="s-example">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2>Ví dụ minh họa</h2>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">🏦 Generalization top-down<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body"><p><code>Vehicle</code> (discriminator: <code>vehicleType</code>) → <code>Car</code>, <code>Truck</code>, <code>Motorcycle</code></p></div>
+    </div>
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">🔼 Generalization bottom-up<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body"><p><code>SavingsAccount</code> và <code>CheckingAccount</code> có chung <code>accountNumber</code>, <code>balance</code>, <code>deposit()</code>, <code>withdraw()</code> → tổng quát thành <code>BankAccount</code></p></div>
+    </div>
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">🐾 Overriding<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body"><p><code>Animal</code> có <code>makeSound()</code>. <code>Dog</code> override <code>makeSound()</code> thành "Woof". <code>Cat</code> override thành "Meow".</p></div>
+    </div>
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">🔷 Abstract class<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body"><p><code><em>Shape</em></code> (abstract, in nghiêng) có <code>area()</code> là abstract. <code>Circle</code> và <code>Rectangle</code> là concrete classes.</p></div>
+    </div>
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">🩸 Disjoint + Complete<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body"><p><code>BloodType</code>: <code>A</code>, <code>B</code>, <code>AB</code>, <code>O</code> – một người chỉ có một nhóm máu <span class="constraint-tag">{disjoint}</span> và đã liệt kê đủ <span class="constraint-tag">{complete}</span>.</p></div>
+    </div>
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">👥 Overlapping + Incomplete<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body"><p><code>Employee</code> → <code>Manager</code>, <code>Engineer</code>, <code>SalesPerson</code> – một người có thể vừa là Manager vừa là Engineer <span class="constraint-tag">{overlapping}</span>. Có thể còn vai trò khác <span class="constraint-tag">{incomplete}</span>.</p></div>
+    </div>
+  </div>
+
+  <!-- GHI CHÚ QUAN TRỌNG -->
+  <div class="section fade-in" id="s-note">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2>Ghi chú quan trọng</h2>
+    </div>
+
+    <div class="note-box">
+      <div class="note-box-title">📌 Generalization thể hiện quan hệ "is-a"</div>
+      <p><code>CheckingAccount</code> <strong>is a</strong> <code>Account</code>. Đây là nguyên tắc quan trọng nhất để quyết định có nên dùng inheritance hay không.</p>
+    </div>
+    <div class="note-box">
+      <div class="note-box-title">📌 Inheritance giúp tái sử dụng code ở mức mô hình</div>
+      <p>Các thuộc tính và thao tác chung chỉ cần định nghĩa một lần ở superclass.</p>
+    </div>
+    <div class="note-box">
+      <div class="note-box-title">📌 Overriding cho phép subclass có hành vi riêng</div>
+      <p>Dù cùng tên operation nhưng cách thực hiện có thể khác nhau.</p>
+    </div>
+    <div class="note-box">
+      <div class="note-box-title">📌 Tránh lạm dụng inheritance quá sâu</div>
+      <p>Quá 3-4 cấp sẽ làm mô hình khó hiểu. Nguyên tắc chung: <strong>"Ưu tiên composition hơn inheritance"</strong> (trong thiết kế hướng đối tượng).</p>
+    </div>
+    <div class="note-box">
+      <div class="note-box-title">📌 Abstract class không thể khởi tạo</div>
+      <p>Dùng để làm khuôn mẫu (template) cho các subclass. Nếu một class có ít nhất một <strong>abstract operation (thao tác trừu tượng)</strong> (không có implementation), thì class đó phải là abstract.</p>
+    </div>
+    <div class="note-box">
+      <div class="note-box-title">📌 Ràng buộc (constraints) rất quan trọng</div>
+      <p>Chúng cung cấp thông tin ngữ nghĩa chính xác về cách các subclass liên quan với nhau (có thể chồng lấn không? có đầy đủ chưa?). Thiếu các constraint này, mô hình có thể bị hiểu sai.</p>
+    </div>
+    <div class="note-box">
+      <div class="note-box-title">📌 Khi không chắc chắn về coverage/completeness</div>
+      <p>Mặc định là <span class="constraint-tag">{disjoint, incomplete}</span> – đây là giả định an toàn nhất.</p>
+    </div>
+  </div>
+
+  <!-- FLASHCARD -->
+  <div class="section fade-in" id="s-flash">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <h2>Flashcard ôn tập</h2>
+    </div>
+    <p style="color:var(--text-muted); margin-bottom:16px; font-size:0.92rem;">Bấm vào thẻ để xem định nghĩa ↓</p>
+    <div class="flashcard-grid">
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">Generalization</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Mối quan hệ giữa superclass và subclass, thể hiện quan hệ "is-a". Ký hiệu: tam giác rỗng hướng về superclass.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">Overriding</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Subclass định nghĩa lại một operation đã có ở superclass. Operation ở subclass sẽ được ưu tiên sử dụng.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">Abstract Class</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Class không có instance trực tiếp. Ký hiệu: tên viết in nghiêng. Dùng làm khuôn mẫu cho subclass.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">{disjoint}</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Instance chỉ thuộc ĐÚNG MỘT subclass. Ví dụ: Account chỉ là Personal HOẶC Business.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">{overlapping}</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Instance có thể thuộc NHIỀU subclass cùng lúc. Ví dụ: Player vừa chơi tennis vừa chơi soccer.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">{complete} vs {incomplete}</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Complete: đã liệt kê ĐỦ tất cả subclass. Incomplete: chưa liệt kê hết, còn có thể có thêm subclass khác.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section fade-in" id="s-quiz">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <h2>Quiz kiểm tra</h2>
+    </div>
+    <p style="color:var(--text-muted); margin-bottom:12px; font-size:0.92rem;">Tất cả câu hỏi đều dựa trên nội dung bài giảng.</p>
+    <div class="quiz-box">
+      <div class="quiz-num" id="quizNum"></div>
+      <div class="quiz-question" id="quizQ"></div>
+      <div class="quiz-options" id="quizOpts"></div>
+      <div class="quiz-feedback" id="quizFb"></div>
+      <div class="quiz-nav">
+        <button class="btn btn-primary" id="quizNext" onclick="nextQuestion()" style="display:none;">Câu tiếp →</button>
+        <div class="quiz-score" id="quizScore"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="section fade-in" id="s-summary">
+    <div class="section-header">
+      <span class="section-num">13</span>
+      <h2>Tổng kết – Những điều cần nắm</h2>
+    </div>
+
+    <div class="summary-list">
+      <div class="summary-item">
+        <div class="summary-num">1</div>
+        <div class="summary-content"><strong>Generalization (Inheritance)</strong> là mối quan hệ giữa superclass (lớp cha) và subclass (lớp con), thể hiện quan hệ <strong>"is-a"</strong>. Ký hiệu bằng <strong>tam giác rỗng</strong> hướng về superclass.</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">2</div>
+        <div class="summary-content">
+          <strong>Hai cách tiếp cận:</strong>
+          <ul style="margin-top:8px; padding-left:18px;">
+            <li><strong>Top-down (Specialization):</strong> Từ class tổng quát → các class chuyên biệt.</li>
+            <li><strong>Bottom-up (Generalization):</strong> Từ các class giống nhau → tạo class tổng quát.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">3</div>
+        <div class="summary-content"><strong>Lợi ích:</strong> Giảm trùng lặp, tăng tái sử dụng, đơn giản hóa sửa đổi.</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">4</div>
+        <div class="summary-content"><strong>Overriding (Ghi đè):</strong> Subclass định nghĩa lại operation của superclass → operation ở subclass được ưu tiên sử dụng.</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">5</div>
+        <div class="summary-content"><strong>Abstract class (Lớp trừu tượng):</strong> Class <strong>không có instance trực tiếp</strong>, dùng để làm khuôn mẫu. Ký hiệu: tên <strong>in nghiêng</strong>.</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">6</div>
+        <div class="summary-content">
+          <strong>Hai cặp ràng buộc của Generalization:</strong>
+          <div class="table-wrap" style="margin-top:10px;">
+            <table>
+              <thead><tr><th>Ràng buộc</th><th>Ý nghĩa</th></tr></thead>
+              <tbody>
+                <tr><td><span class="constraint-tag">{disjoint}</span></td><td>Instance chỉ thuộc <strong>một</strong> subclass</td></tr>
+                <tr><td><span class="constraint-tag">{overlapping}</span></td><td>Instance có thể thuộc <strong>nhiều</strong> subclass</td></tr>
+                <tr><td><span class="constraint-tag">{complete}</span></td><td>Đã liệt kê <strong>đủ</strong> tất cả subclass</td></tr>
+                <tr><td><span class="constraint-tag">{incomplete}</span></td><td><strong>Chưa</strong> liệt kê hết subclass</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">7</div>
+        <div class="summary-content">
+          <strong>Khuyến nghị thực tế:</strong>
+          <ul style="margin-top:8px; padding-left:18px;">
+            <li>Giới hạn số cấp inheritance ≤ <strong>3-4</strong> để mô hình dễ đọc.</li>
+            <li>Sử dụng <strong>note</strong> để bổ sung các ràng buộc đặc biệt.</li>
+            <li>Khi không chắc chắn, mặc định <span class="constraint-tag">{disjoint, incomplete}</span>.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="page-wrapper">Lecture 2-5 · Class Diagram: Generalization · Tài liệu học tập tương tác</div>
+</footer>
+
+<script>
+  function toggleDark() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('darkBtn').textContent = isDark ? '🌙 Dark Mode' : '☀️ Light Mode';
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  }
+  (function() {
+    const t = localStorage.getItem('theme');
+    if (t === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.addEventListener('DOMContentLoaded', () => { document.getElementById('darkBtn').textContent = '☀️ Light Mode'; }); }
+  })();
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+  function toggleAcc(btn) { const body = btn.nextElementSibling; const isOpen = btn.classList.contains('open'); btn.classList.toggle('open', !isOpen); body.classList.toggle('open', !isOpen); }
+  function openTab(btn, panelId) {
+    btn.closest('.tabs-wrapper').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.closest('.tabs-wrapper').querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active'); document.getElementById(panelId).classList.add('active');
+  }
+  const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }); }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  const quizData = [
+    { q: "Generalization thể hiện loại quan hệ nào giữa các class?", opts: ["has-a (có một)", "is-a (là một)", "uses-a (sử dụng một)", "creates-a (tạo ra một)"], ans: 1, explain: "Generalization thể hiện quan hệ 'is-a' (là một). Ví dụ: CheckingAccount IS A Account. Đây là nguyên tắc cơ bản để quyết định có nên dùng inheritance hay không." },
+    { q: "Ký hiệu của Abstract Class trong UML là gì?", opts: ["Tên class viết IN HOA", "Tên class viết in nghiêng (italic)", "Tên class có đường gạch dưới", "Tên class trong dấu ngoặc kép"], ans: 1, explain: "Abstract class được ký hiệu bằng cách viết tên class in nghiêng (italic) trong UML. Abstract class không có instance trực tiếp, chỉ là khuôn mẫu cho các subclass." },
+    { q: "Constraint {disjoint} có nghĩa là gì?", opts: ["Các subclass không có thuộc tính chung", "Một instance có thể thuộc nhiều subclass cùng lúc", "Một instance chỉ có thể thuộc đúng một subclass", "Tất cả subclass đã được liệt kê đầy đủ"], ans: 2, explain: "{disjoint} có nghĩa là một instance chỉ có thể thuộc về đúng MỘT subclass, không thể đồng thời thuộc nhiều subclass. Ví dụ: Account chỉ là Personal HOẶC Business." },
+    { q: "Trong trường hợp nào thì dùng {overlapping}?", opts: ["Khi tất cả subclass đã được liệt kê", "Khi một instance có thể thuộc nhiều subclass cùng lúc", "Khi các subclass không có gì chung", "Khi chỉ có một subclass"], ans: 1, explain: "{overlapping} được dùng khi một instance CÓ THỂ thuộc nhiều subclass cùng lúc. Ví dụ: một Player có thể vừa là TennisPlayer vừa là SoccerPlayer." },
+    { q: "{complete} và {incomplete} khác nhau thế nào?", opts: ["{complete} nghĩa là tất cả subclass đã được liệt kê; {incomplete} nghĩa là chưa liệt kê hết", "{complete} nghĩa là subclass có đầy đủ thuộc tính; {incomplete} nghĩa là thiếu thuộc tính", "{complete} dùng cho top-down; {incomplete} dùng cho bottom-up", "Hai ràng buộc này giống nhau"], ans: 0, explain: "{complete} nghĩa là đã liệt kê ĐỦ tất cả subclass, không còn subclass nào khác. {incomplete} nghĩa là chưa liệt kê hết, vẫn có thể có các subclass chưa được vẽ vào diagram." },
+    { q: "Khuyến nghị thực tế về số cấp kế thừa trong inheritance là gì?", opts: ["Không giới hạn, càng nhiều càng tốt", "Tối đa 1-2 cấp", "Tối đa 3-4 cấp", "Đúng 5 cấp"], ans: 2, explain: "Khuyến nghị thực tế là chỉ nên dùng tối đa 3-4 cấp kế thừa. Càng nhiều cấp, class diagram càng khó đọc và khó hiểu, gây khó khăn cho tất cả các bên liên quan." }
+  ];
+
+  let currentQ = 0, score = 0, answered = false;
+  function renderQuestion() {
+    const q = quizData[currentQ];
+    document.getElementById('quizNum').textContent = `Câu ${currentQ + 1} / ${quizData.length}`;
+    document.getElementById('quizQ').textContent = q.q;
+    const optsEl = document.getElementById('quizOpts'); optsEl.innerHTML = '';
+    q.opts.forEach((opt, i) => { const btn = document.createElement('button'); btn.className = 'quiz-option'; btn.textContent = opt; btn.onclick = () => checkAnswer(i); optsEl.appendChild(btn); });
+    document.getElementById('quizFb').className = 'quiz-feedback'; document.getElementById('quizFb').textContent = '';
+    document.getElementById('quizNext').style.display = 'none';
+    document.getElementById('quizScore').textContent = `Điểm: ${score}/${quizData.length}`; answered = false;
+  }
+  function checkAnswer(i) {
+    if (answered) return; answered = true;
+    const q = quizData[currentQ]; const opts = document.querySelectorAll('.quiz-option'); opts.forEach(b => b.disabled = true);
+    const fb = document.getElementById('quizFb');
+    if (i === q.ans) { opts[i].classList.add('correct'); score++; fb.className = 'quiz-feedback correct show'; fb.textContent = '✅ Đúng! ' + q.explain; }
+    else { opts[i].classList.add('wrong'); opts[q.ans].classList.add('correct'); fb.className = 'quiz-feedback wrong show'; fb.textContent = '❌ Chưa đúng. ' + q.explain; }
+    document.getElementById('quizScore').textContent = `Điểm: ${score}/${quizData.length}`;
+    const nextBtn = document.getElementById('quizNext'); nextBtn.style.display = 'inline-block';
+    if (currentQ < quizData.length - 1) { nextBtn.textContent = 'Câu tiếp →'; nextBtn.onclick = nextQuestion; }
+    else { nextBtn.textContent = '🔄 Làm lại'; nextBtn.onclick = resetQuiz; }
+  }
+  function nextQuestion() { currentQ++; renderQuestion(); }
+  function resetQuiz() { currentQ = 0; score = 0; renderQuestion(); }
+  renderQuestion();
+</script>
+</body>
+</html>

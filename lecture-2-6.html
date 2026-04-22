@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lecture 2-6 – Additional Constraints & Summary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f2ec; --surface: #ffffff; --surface2: #eee9e0;
+      --border: #d6cfc3; --text: #1a1714; --text-muted: #6b6358;
+      --accent: #c8501a; --accent2: #2a6dd9; --accent3: #1a8a4a;
+      --highlight: #fff3cd; --highlight-border: #f5c842;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --radius: 12px; --radius-sm: 6px;
+    }
+    [data-theme="dark"] {
+      --bg: #121010; --surface: #1e1b18; --surface2: #2a2520;
+      --border: #3a3530; --text: #f0ebe3; --text-muted: #9a9080;
+      --accent: #e8704a; --accent2: #5a9bf5; --accent3: #4ac87a;
+      --highlight: #2a2200; --highlight-border: #a08020;
+      --shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.7; transition: background 0.3s, color 0.3s; }
+    strong { color: var(--accent); font-weight: 600; }
+    code { font-family: 'JetBrains Mono', monospace; background: var(--surface2); padding: 2px 7px; border-radius: 4px; font-size: 0.88em; color: var(--accent2); }
+    a { color: var(--accent2); text-decoration: none; }
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .page-wrapper { max-width: 900px; margin: 0 auto; padding: 0 20px 80px; }
+    .site-header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); }
+    .site-header .brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; letter-spacing: -0.02em; color: var(--accent); }
+    .dark-toggle { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; cursor: pointer; font-size: 0.82rem; font-family: 'DM Sans', sans-serif; color: var(--text); transition: all 0.2s; }
+    .dark-toggle:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); z-index: 200; transition: width 0.1s; }
+    .hero { padding: 60px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
+    .hero-label { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; background: var(--accent); color: #fff; padding: 4px 12px; border-radius: 4px; margin-bottom: 20px; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px; }
+    .hero h1 span { color: var(--accent); }
+    .hero-desc { font-size: 1.05rem; color: var(--text-muted); max-width: 640px; line-height: 1.7; }
+    .toc { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 20px 24px; margin: 32px 0; }
+    .toc-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+    .toc ol { padding-left: 20px; } .toc li { margin: 5px 0; font-size: 0.92rem; } .toc a { color: var(--accent2); } .toc a:hover { color: var(--accent); }
+    .section { margin-bottom: 52px; }
+    .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+    .section-num { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 500; color: var(--accent); background: var(--surface2); border: 1px solid var(--border); padding: 4px 10px; border-radius: 4px; white-space: nowrap; }
+    .section h2 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 26px; margin-bottom: 16px; box-shadow: var(--shadow); }
+    .card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 12px; }
+    .card p { margin-bottom: 10px; } .card p:last-child { margin-bottom: 0; }
+    .card ul, .card ol { padding-left: 20px; } .card li { margin: 6px 0; }
+    .card-highlight { border-left: 4px solid var(--highlight-border); background: var(--highlight); }
+    .card-accent { border-left: 4px solid var(--accent); }
+    .card-blue { border-left: 4px solid var(--accent2); }
+    .card-green { border-left: 4px solid var(--accent3); }
+    .tip { position: relative; cursor: help; border-bottom: 2px dashed var(--accent2); }
+    .tip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 0.78rem; line-height: 1.5; padding: 8px 12px; border-radius: 8px; width: 220px; text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 50; font-family: 'DM Sans', sans-serif; }
+    .tip::before { content: ''; position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--text); opacity: 0; transition: opacity 0.2s; z-index: 50; }
+    .tip:hover::after, .tip:hover::before { opacity: 1; }
+    .accordion { margin-bottom: 10px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+    .accordion-btn { width: 100%; background: var(--surface); border: none; padding: 16px 20px; text-align: left; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.97rem; font-weight: 500; color: var(--text); display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: background 0.2s; }
+    .accordion-btn:hover { background: var(--surface2); } .accordion-btn.open { background: var(--surface2); color: var(--accent); }
+    .accordion-icon { font-size: 1.2rem; transition: transform 0.3s; flex-shrink: 0; color: var(--accent); }
+    .accordion-btn.open .accordion-icon { transform: rotate(180deg); }
+    .accordion-body { background: var(--surface); max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s; padding: 0 20px; }
+    .accordion-body.open { max-height: 900px; padding: 18px 20px; border-top: 1px solid var(--border); }
+    .accordion-body p, .accordion-body li { font-size: 0.95rem; }
+    .accordion-body ul, .accordion-body ol { padding-left: 18px; } .accordion-body li { margin: 6px 0; }
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; background: var(--surface); border-radius: var(--radius); overflow: hidden; }
+    th { background: var(--surface2); padding: 12px 16px; text-align: left; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+    td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; } tr:hover td { background: var(--surface2); }
+    .note-box { background: var(--highlight); border: 1px solid var(--highlight-border); border-radius: var(--radius); padding: 18px 22px; margin: 16px 0; font-size: 0.94rem; }
+    .note-box-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--highlight-border); margin-bottom: 8px; }
+    [data-theme="dark"] .note-box-title { color: #c8a030; }
+    .constraint-tag { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; background: var(--surface2); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; color: var(--accent2); margin: 2px; }
+
+    /* XOR Diagram */
+    .xor-diagram { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 16px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .xor-row { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+    .xor-node { background: var(--surface); border: 2px solid var(--accent2); border-radius: 8px; padding: 10px 18px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent2); }
+    .xor-center { background: var(--surface); border: 2px solid var(--accent); border-radius: 8px; padding: 10px 18px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent); }
+    .xor-label { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; background: var(--accent); color: #fff; padding: 3px 10px; border-radius: 4px; }
+    .xor-arrow { color: var(--text-muted); font-size: 1.1rem; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .xor-arrow small { font-family: 'DM Sans', sans-serif; font-size: 0.7rem; color: var(--text-muted); }
+
+    /* Big summary checklist */
+    .checklist { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .check-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+    .check-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .check-content { font-size: 0.92rem; }
+
+    /* Master summary table */
+    .master-table-wrap { overflow-x: auto; margin: 14px 0; }
+    .master-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; background: var(--surface); border-radius: var(--radius); overflow: hidden; }
+    .master-table th { background: var(--accent); color: #fff; padding: 12px 16px; text-align: left; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; border-bottom: 2px solid var(--border); }
+    .master-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .master-table tr:last-child td { border-bottom: none; }
+    .master-table tr:hover td { background: var(--surface2); }
+
+    .flashcard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 16px; }
+    .flashcard { perspective: 800px; cursor: pointer; height: 160px; }
+    .flashcard-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); border-radius: var(--radius); }
+    .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-front, .flashcard-back { position: absolute; inset: 0; backface-visibility: hidden; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px; text-align: center; border: 1px solid var(--border); }
+    .flashcard-front { background: var(--surface); }
+    .flashcard-back { background: var(--accent); color: #fff; transform: rotateY(180deg); }
+    .flashcard-front .term { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 8px; color: var(--text); }
+    .flashcard-front .hint { font-size: 0.75rem; color: var(--text-muted); }
+    .flashcard-back .def { font-size: 0.83rem; line-height: 1.5; }
+
+    .quiz-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-top: 16px; }
+    .quiz-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
+    .quiz-question { font-weight: 600; font-size: 1rem; margin-bottom: 16px; }
+    .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-option { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; cursor: pointer; font-size: 0.92rem; color: var(--text); transition: all 0.2s; text-align: left; }
+    .quiz-option:hover:not(:disabled) { border-color: var(--accent2); background: var(--surface); }
+    .quiz-option.correct { background: #d4fce6; border-color: var(--accent3); color: #0a4a20; }
+    .quiz-option.wrong { background: #fce4d4; border-color: var(--accent); color: #4a1000; }
+    [data-theme="dark"] .quiz-option.correct { background: #0a2a18; color: #4ac87a; }
+    [data-theme="dark"] .quiz-option.wrong { background: #2a1008; color: #e8704a; }
+    .quiz-feedback { margin-top: 14px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.9rem; display: none; }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct { background: #d4fce6; color: #0a4a20; border: 1px solid var(--accent3); }
+    .quiz-feedback.wrong { background: #fce4d4; color: #4a1000; border: 1px solid var(--accent); }
+    [data-theme="dark"] .quiz-feedback.correct { background: #0a2a18; color: #4ac87a; border-color: var(--accent3); }
+    [data-theme="dark"] .quiz-feedback.wrong { background: #2a1008; color: #e8704a; border-color: var(--accent); }
+    .quiz-nav { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
+    .btn { padding: 9px 20px; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid var(--border); background: var(--surface2); color: var(--text); }
+    .btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); } .btn-primary:hover { opacity: 0.85; }
+    .quiz-score { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); margin-left: auto; }
+
+    .summary-list { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+    .summary-item { display: flex; gap: 14px; align-items: flex-start; padding: 14px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+    .summary-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--accent); line-height: 1; flex-shrink: 0; min-width: 32px; }
+    .summary-content { font-size: 0.93rem; }
+
+    .site-footer { border-top: 1px solid var(--border); padding: 32px 20px; text-align: center; font-size: 0.82rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.5s; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 1.8rem; }
+      .flashcard-grid { grid-template-columns: 1fr 1fr; }
+      .section h2 { font-size: 1.2rem; }
+      .card { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<header class="site-header">
+  <div class="brand">UML · Lecture 2-6</div>
+  <button class="dark-toggle" onclick="toggleDark()" id="darkBtn">🌙 Dark Mode</button>
+</header>
+
+<div class="page-wrapper">
+
+  <!-- HERO -->
+  <div class="hero fade-in">
+    <div class="hero-label">Lecture 2-6</div>
+    <h1>Class Diagram:<br><span>Additional Constraints</span> & Summary</h1>
+    <p class="hero-desc">
+      Bài giảng này giới thiệu các cách để <strong>thêm ràng buộc (constraints)</strong> vào class diagram qua <strong>notes</strong> và các ký hiệu đặc biệt như <strong>{ordered}</strong>, <strong>{subset}</strong>, <strong>{xor}</strong>. Cuối bài là tổng kết toàn bộ các thành phần đã học về class diagram trong Bài 2.
+    </p>
+
+    <div class="toc">
+      <div class="toc-title">📋 Mục lục</div>
+      <ol>
+        <li><a href="#s1">Constraints trong Class Diagram</a></li>
+        <li><a href="#s2">Các loại Constraints bổ sung thường gặp</a></li>
+        <li><a href="#s3">Ví dụ chi tiết: Exclusive Or (XOR)</a></li>
+        <li><a href="#s4">Tổng kết các thành phần của Class Diagram (Bài 2)</a></li>
+        <li><a href="#s5">Ứng dụng của Class Diagram</a></li>
+        <li><a href="#s-example">Ví dụ minh họa</a></li>
+        <li><a href="#s-note">Ghi chú quan trọng</a></li>
+        <li><a href="#s-flash">Flashcard ôn tập</a></li>
+        <li><a href="#s-quiz">Quiz kiểm tra</a></li>
+        <li><a href="#s-summary">Tổng kết</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- SECTION 1: CONSTRAINTS DEFINITION -->
+  <div class="section fade-in" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Constraints (Ràng buộc) trong Class Diagram</h2>
+    </div>
+
+    <div class="card card-accent">
+      <h3>Định nghĩa</h3>
+      <p>Một <strong>constraint (ràng buộc)</strong> là một <strong>phát biểu (statement)</strong> có thể được <strong>kiểm tra (tested)</strong> là đúng (true) hoặc sai (false).</p>
+      <p><strong>Mục đích:</strong> Cung cấp thêm thông tin về các quy tắc nghiệp vụ (business rules) mà hệ thống phải tuân thủ.</p>
+    </div>
+
+    <div class="card">
+      <h3>Cách thể hiện Constraints</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Cách thể hiện</th><th>Mô tả</th><th>Ví dụ</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Ghi chú bên cạnh (Note)</strong></td>
+              <td>Dùng biểu tượng <strong>note</strong> (hình chữ nhật có góc gập) để viết ràng buộc bằng ngôn ngữ tự nhiên hoặc <span class="tip" data-tip="Object Constraint Language: Ngôn ngữ hình thức dùng để đặc tả ràng buộc trong UML, thay thế cho ngôn ngữ tự nhiên khi cần độ chính xác cao hơn.">OCL (Object Constraint Language)</span>.</td>
+              <td><code>{ balance >= 100000 }</code> cho tài khoản ưu tiên.</td>
+            </tr>
+            <tr>
+              <td><strong>Gắn trực tiếp vào operation</strong></td>
+              <td>Viết ràng buộc ngay bên cạnh operation mà nó liên quan.</td>
+              <td>Kiểm tra <code>checkBalance()</code> luôn trả về số dư ≥ 100,000.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <div class="note-box-title">⚠️ Lưu ý quan trọng</div>
+      <p>Khi một constraint được đặc tả trong class diagram, nó <strong>phải được đảm bảo (enforced)</strong> trong quá trình <strong>implementation (cài đặt)</strong> của hệ thống.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 2: TYPES OF CONSTRAINTS -->
+  <div class="section fade-in" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Các loại Constraints bổ sung thường gặp</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Loại Constraint</th><th>Ký hiệu</th><th>Ý nghĩa</th><th>Ví dụ</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Ordering (Thứ tự)</strong></td>
+            <td><span class="constraint-tag">{ordered}</span></td>
+            <td>Các phần tử trong một association có một <strong>thứ tự xác định</strong>.</td>
+            <td>Sinh viên trong danh sách chờ (waitlist) của khóa học được sắp xếp theo nguyên tắc <strong>first-in-first-out (FIFO)</strong> – ai đến trước được ưu tiên trước.</td>
+          </tr>
+          <tr>
+            <td><strong>Subset (Tập con)</strong></td>
+            <td><span class="constraint-tag">{subset}</span></td>
+            <td>Một tập hợp các đối tượng này là <strong>tập con</strong> của một tập hợp khác.</td>
+            <td><code>Person</code> là <strong>chair (chủ tịch)</strong> của một <code>Committee</code> → <code>chair</code> là <span class="constraint-tag">{subset}</span> của <code>members</code> (thành viên). Nghĩa là chủ tịch cũng là một thành viên của ủy ban.</td>
+          </tr>
+          <tr>
+            <td><strong>Exclusive Or (XOR – Hoặc loại trừ)</strong></td>
+            <td><span class="constraint-tag">{xor}</span></td>
+            <td>Chỉ có thể chọn <strong>một trong hai</strong> đường liên kết, <strong>không thể chọn cả hai</strong>.</td>
+            <td>Một <code>Account</code> (tài khoản) có thể được sở hữu bởi <strong>một <code>Person</code> (cá nhân)</strong> <strong>hoặc</strong> <strong>một <code>Company</code> (công ty)</strong>, nhưng <strong>không thể</strong> vừa là cá nhân vừa là công ty cùng lúc.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Accordion detail for each -->
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">📋 Chi tiết: {ordered} – Ví dụ Waitlist<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body">
+        <p>Khi một association được đánh dấu <span class="constraint-tag">{ordered}</span>, các đối tượng kết nối đến class đó qua association này được sắp xếp theo một thứ tự nhất định.</p>
+        <p style="margin-top:8px;"><strong>Ví dụ:</strong> <code>Course</code> — (waitlist) — <code>Student</code> <span class="constraint-tag">{ordered}</span></p>
+        <p>Danh sách sinh viên chờ được sắp xếp theo nguyên tắc <strong>first-in-first-out (FIFO)</strong> – ai đăng ký trước sẽ được ưu tiên vào lớp trước khi có chỗ trống.</p>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">🏛️ Chi tiết: {subset} – Ví dụ Committee<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body">
+        <p><code>Person</code> là <strong>chair (chủ tịch)</strong> của một <code>Committee</code> → <code>chair</code> là <span class="constraint-tag">{subset}</span> của <code>members</code> (thành viên).</p>
+        <p style="margin-top:8px;">Nghĩa là: chủ tịch cũng là một thành viên của ủy ban. Tập hợp các chủ tịch ⊆ tập hợp các thành viên. Không thể ai đó làm chủ tịch mà không phải là thành viên.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: XOR DETAIL -->
+  <div class="section fade-in" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Ví dụ chi tiết về Exclusive Or (XOR)</h2>
+    </div>
+
+    <div class="card">
+      <div class="xor-diagram">
+        <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">Sơ đồ: Account – Person OR Company</div>
+        <div class="xor-row">
+          <div class="xor-node">Person</div>
+          <div class="xor-arrow">——<small>holder</small>——</div>
+          <div class="xor-center">Account</div>
+          <div class="xor-arrow">——<small>holder</small>——</div>
+          <div class="xor-node">Company</div>
+        </div>
+        <div class="xor-label">{xor}</div>
+        <p style="font-size:0.78rem; color:var(--text-muted); text-align:center; margin-top:8px;">Ràng buộc {xor} được đặt giữa hai association từ Account</p>
+      </div>
+    </div>
+
+    <div class="card card-highlight">
+      <h3>Giải thích</h3>
+      <p>Một tài khoản chỉ có thể có chủ sở hữu là cá nhân <strong>HOẶC</strong> công ty, chứ không thể vừa là cá nhân vừa là công ty. Đây là một ràng buộc nghiệp vụ phổ biến trong lĩnh vực ngân hàng/tài chính.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 4: BIG SUMMARY TABLE -->
+  <div class="section fade-in" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Tổng kết các thành phần của Class Diagram (Đã học trong Bài 2)</h2>
+    </div>
+
+    <div class="master-table-wrap">
+      <table class="master-table">
+        <thead><tr><th>Thành phần</th><th>Mô tả</th><th>Bài học</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Classes (Lớp)</strong></td>
+            <td>Định nghĩa các đối tượng quan trọng với <strong>attributes (thuộc tính)</strong> và <strong>operations (thao tác)</strong>.</td>
+            <td>2-2</td>
+          </tr>
+          <tr>
+            <td><strong>Associations (Liên kết)</strong></td>
+            <td>Mối quan hệ giữa các class, có thể có <strong>multiplicity (bội số)</strong> và <strong>role names (tên vai trò)</strong>.</td>
+            <td>2-3</td>
+          </tr>
+          <tr>
+            <td><strong>Aggregation / Composition</strong></td>
+            <td>Trường hợp đặc biệt của association, thể hiện quan hệ <strong>"part of" (một phần của)</strong>.</td>
+            <td>2-3</td>
+          </tr>
+          <tr>
+            <td><strong>Generalization (Inheritance)</strong></td>
+            <td>Quan hệ cha-con, thể hiện <strong>"is-a" (là một)</strong>. Kèm các constraint <span class="constraint-tag">{disjoint}</span>, <span class="constraint-tag">{overlapping}</span>, <span class="constraint-tag">{complete}</span>, <span class="constraint-tag">{incomplete}</span>.</td>
+            <td>2-5</td>
+          </tr>
+          <tr>
+            <td><strong>Association Class (Lớp liên kết)</strong></td>
+            <td>Dùng để lưu thuộc tính của chính mối quan hệ (ví dụ: <code>grade</code> trong quan hệ <code>Student</code> – <code>Course</code>).</td>
+            <td>2-4</td>
+          </tr>
+          <tr>
+            <td><strong>Constraints (Ràng buộc)</strong></td>
+            <td>Các quy tắc bổ sung như <span class="constraint-tag">{ordered}</span>, <span class="constraint-tag">{subset}</span>, <span class="constraint-tag">{xor}</span>, hoặc các note tùy chỉnh.</td>
+            <td>2-6</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 5: APPLICATIONS -->
+  <div class="section fade-in" id="s5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Ứng dụng của Class Diagram</h2>
+    </div>
+
+    <div class="card card-accent">
+      <h3>Mô hình hóa yêu cầu dữ liệu (Model data requirements)</h3>
+      <ul>
+        <li>Xác định tất cả các <strong>items (đối tượng)</strong> tồn tại trong <strong>application domain (lĩnh vực ứng dụng)</strong>, ví dụ: <code>Order</code> (đơn hàng), <code>Invoice</code> (hóa đơn), <code>Account</code> (tài khoản), <code>VIP</code> (khách hàng đặc biệt), v.v.</li>
+        <li>Mô hình này mô tả <strong>những gì cần lưu trữ</strong> trong hệ thống.</li>
+      </ul>
+    </div>
+
+    <div class="card card-blue">
+      <h3>Mô hình hóa chương trình (Model a program)</h3>
+      <ul>
+        <li>Sẽ được đề cập trong các bài giảng sau.</li>
+        <li>Ví dụ: Mô hình hóa các class trong một chương trình như <code>Client</code>, <code>EventHandler</code>, <code>GUIHandler</code>.</li>
+        <li><strong>Dependency (phụ thuộc)</strong> giữa các class sẽ được giới thiệu (một class này sử dụng class khác).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION: VÍ DỤ MINH HỌA -->
+  <div class="section fade-in" id="s-example">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Ví dụ minh họa</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Loại Constraint</th><th>Ví dụ cụ thể</th><th>Mô tả</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Note</strong></td>
+            <td><code>PreferredSavingAccount</code> có note: <code>{ balance >= 100000 }</code></td>
+            <td>Tài khoản tiết kiệm ưu tiên phải có số dư tối thiểu 100,000 đơn vị tiền tệ.</td>
+          </tr>
+          <tr>
+            <td><strong>Ordering</strong></td>
+            <td><code>Course</code> – <code>Student</code> (waitlist) với <span class="constraint-tag">{ordered}</span></td>
+            <td>Danh sách sinh viên chờ được sắp xếp theo thứ tự thời gian đăng ký (FIFO).</td>
+          </tr>
+          <tr>
+            <td><strong>Subset</strong></td>
+            <td><code>Committee</code> có <code>members</code> (thành viên) và <code>chair</code> (chủ tịch) với <span class="constraint-tag">{subset}</span></td>
+            <td>Chủ tịch là một thành viên đặc biệt, nhưng vẫn nằm trong tập hợp các thành viên.</td>
+          </tr>
+          <tr>
+            <td><strong>XOR</strong></td>
+            <td><code>Account</code> liên kết với <code>Person</code> hoặc <code>Company</code>, kèm <span class="constraint-tag">{xor}</span></td>
+            <td>Một tài khoản chỉ có thể thuộc về cá nhân hoặc công ty, không thể là cả hai.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3>Ví dụ tổng hợp về Class Diagram cho hệ thống quản lý đơn hàng</h3>
+      <div style="background:var(--surface2); border-radius:var(--radius); padding:20px; font-family:'JetBrains Mono',monospace; font-size:0.82rem; line-height:1.9; overflow-x:auto;">
+[Customer] --- (places) --- [Order] --- (contains) --- [OrderLine]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+&nbsp;&nbsp;&nbsp;&nbsp;| (xor)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| (has)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+[Company]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Invoice]
+      </div>
+      <ul style="margin-top:14px; padding-left:20px;">
+        <li><code>Customer</code> có thể là <code>Person</code> hoặc <code>Company</code> <span class="constraint-tag">{xor}</span>.</li>
+        <li><code>Order</code> chứa nhiều <code>OrderLine</code> (composition).</li>
+        <li><code>Order</code> có một <code>Invoice</code> (hóa đơn).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- GHI CHÚ QUAN TRỌNG -->
+  <div class="section fade-in" id="s-note">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>Ghi chú quan trọng</h2>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">📌 Constraints là yếu tố bắt buộc phải kiểm tra (enforced) trong code<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body"><p>Nếu bạn vẽ một constraint trong class diagram, lập trình viên <strong>phải</strong> đảm bảo code thực thi đúng constraint đó. Không thể bỏ qua.</p></div>
+    </div>
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">📌 Note có thể dùng cho bất kỳ thông tin bổ sung nào<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body"><p>Không chỉ constraint, note còn có thể dùng để giải thích lý do thiết kế, cảnh báo, hoặc bất kỳ thông tin văn xuôi nào giúp người đọc hiểu mô hình tốt hơn.</p></div>
+    </div>
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">📌 XOR là ràng buộc phổ biến trong hệ thống có nhiều loại chủ thể<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body"><p>Ngân hàng (cá nhân/công ty), bảo hiểm (chủ hợp đồng/người thụ hưởng), v.v. Đây là pattern xuất hiện thường xuyên trong thực tế.</p></div>
+    </div>
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">📌 Class Diagram có thể dùng ở nhiều giai đoạn<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body">
+        <ul>
+          <li><strong>Requirement model (Mô hình yêu cầu):</strong> Nắm bắt các khái niệm trong lĩnh vực ứng dụng (cái gì cần lưu trữ).</li>
+          <li><strong>Solution model (Mô hình giải pháp):</strong> Mô hình hóa cấu trúc của chương trình (các class, dependency, design patterns).</li>
+        </ul>
+      </div>
+    </div>
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">📌 Dependency (phụ thuộc) sẽ được học trong bài sau<span class="accordion-icon">▾</span></button>
+      <div class="accordion-body"><p>Đây là một loại quan hệ khác (không phải association) dùng để thể hiện khi một class sử dụng một class khác nhưng không phải là quan hệ "có" hay "là" lâu dài.</p></div>
+    </div>
+    <div class="note-box" style="margin-top:16px;">
+      <div class="note-box-title">⭐ Điều quan trọng cần nhớ</div>
+      <p>Một constraint trong mô hình <strong>bắt buộc</strong> phải được thực thi trong code. Mô hình không chỉ là hình vẽ; nó là một <strong>bản đặc tả chính xác</strong> về những gì hệ thống phải làm.</p>
+    </div>
+  </div>
+
+  <!-- FLASHCARD -->
+  <div class="section fade-in" id="s-flash">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>Flashcard ôn tập</h2>
+    </div>
+    <p style="color:var(--text-muted); margin-bottom:16px; font-size:0.92rem;">Bấm vào thẻ để xem định nghĩa ↓</p>
+    <div class="flashcard-grid">
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">Constraint</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Ràng buộc – Một phát biểu có thể kiểm tra đúng/sai. Cung cấp quy tắc nghiệp vụ, PHẢI được thực thi trong code.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">{ordered}</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Các phần tử trong association có thứ tự xác định. Ví dụ: danh sách chờ theo FIFO.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">{subset}</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Tập con – Một tập hợp đối tượng là tập con của tập hợp khác. Ví dụ: chair ⊆ members.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">{xor}</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Exclusive Or – Chỉ chọn ĐƯỢC MỘT trong hai đường liên kết, KHÔNG thể chọn cả hai. Ví dụ: Account thuộc Person HOẶC Company.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">OCL</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Object Constraint Language – Ngôn ngữ hình thức để viết ràng buộc trong UML với độ chính xác cao hơn ngôn ngữ tự nhiên.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">Note trong UML</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Biểu tượng hình chữ nhật có góc gập, dùng để gắn thêm thông tin (constraint, giải thích) vào bất kỳ phần tử nào của diagram.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section fade-in" id="s-quiz">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2>Quiz kiểm tra</h2>
+    </div>
+    <p style="color:var(--text-muted); margin-bottom:12px; font-size:0.92rem;">Tất cả câu hỏi đều dựa trên nội dung bài giảng.</p>
+    <div class="quiz-box">
+      <div class="quiz-num" id="quizNum"></div>
+      <div class="quiz-question" id="quizQ"></div>
+      <div class="quiz-options" id="quizOpts"></div>
+      <div class="quiz-feedback" id="quizFb"></div>
+      <div class="quiz-nav">
+        <button class="btn btn-primary" id="quizNext" onclick="nextQuestion()" style="display:none;">Câu tiếp →</button>
+        <div class="quiz-score" id="quizScore"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="section fade-in" id="s-summary">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2>Tổng kết – Những điều cần nắm</h2>
+    </div>
+
+    <div class="summary-list">
+      <div class="summary-item">
+        <div class="summary-num">1</div>
+        <div class="summary-content"><strong>Constraint (Ràng buộc)</strong> là một phát biểu có thể kiểm tra đúng/sai, được thêm vào class diagram để cung cấp các quy tắc nghiệp vụ. Có thể dùng <strong>note</strong> hoặc viết trực tiếp.</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">2</div>
+        <div class="summary-content">
+          <strong>Ba loại constraint bổ sung quan trọng:</strong>
+          <ul style="margin-top:8px; padding-left:18px;">
+            <li><span class="constraint-tag">{ordered}</span>: Các phần tử có thứ tự (ví dụ: waitlist FIFO).</li>
+            <li><span class="constraint-tag">{subset}</span>: Một tập hợp là tập con của tập hợp khác (ví dụ: chair ⊆ members).</li>
+            <li><span class="constraint-tag">{xor}</span> (Exclusive Or): Chỉ chọn một trong hai đường liên kết, không thể chọn cả hai (ví dụ: account holder là person hoặc company).</li>
+          </ul>
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">3</div>
+        <div class="summary-content">
+          <strong>Tổng kết toàn bộ Class Diagram đã học (Bài 2):</strong>
+          <ul style="margin-top:8px; padding-left:18px;">
+            <li><strong>Classes</strong> (tên, attributes, operations)</li>
+            <li><strong>Associations</strong> (binary, unary, ternary, multiplicity, role names)</li>
+            <li><strong>Aggregation / Composition</strong> (hollow diamond – optional, filled diamond – mandatory)</li>
+            <li><strong>Association Class</strong> (thuộc tính của mối quan hệ)</li>
+            <li><strong>Generalization / Inheritance</strong> (superclass, subclass, overriding, abstract class, disjoint/overlapping, complete/incomplete)</li>
+            <li><strong>Constraints</strong> (ordered, subset, xor, notes)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">4</div>
+        <div class="summary-content">
+          <strong>Class Diagram có hai ứng dụng chính:</strong>
+          <ul style="margin-top:8px; padding-left:18px;">
+            <li><strong>Mô hình hóa yêu cầu dữ liệu (data requirements)</strong> của lĩnh vực ứng dụng (trọng tâm của Bài 2).</li>
+            <li><strong>Mô hình hóa chương trình (model a program)</strong> – sẽ học trong bài sau.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">5</div>
+        <div class="summary-content">
+          <strong>Điều quan trọng cần nhớ:</strong> Một constraint trong mô hình <strong>bắt buộc</strong> phải được thực thi trong code. Mô hình không chỉ là hình vẽ; nó là một <strong>bản đặc tả chính xác</strong> về những gì hệ thống phải làm.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="page-wrapper">Lecture 2-6 · Additional Constraints & Summary · Tài liệu học tập tương tác</div>
+</footer>
+
+<script>
+  function toggleDark() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('darkBtn').textContent = isDark ? '🌙 Dark Mode' : '☀️ Light Mode';
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  }
+  (function() {
+    const t = localStorage.getItem('theme');
+    if (t === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); document.addEventListener('DOMContentLoaded', () => { document.getElementById('darkBtn').textContent = '☀️ Light Mode'; }); }
+  })();
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+  function toggleAcc(btn) { const body = btn.nextElementSibling; const isOpen = btn.classList.contains('open'); btn.classList.toggle('open', !isOpen); body.classList.toggle('open', !isOpen); }
+  const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }); }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  const quizData = [
+    { q: "Định nghĩa chính xác của một 'constraint' trong UML là gì?", opts: ["Một hình vẽ bổ sung vào diagram", "Một phát biểu có thể kiểm tra đúng hoặc sai", "Một loại association đặc biệt", "Một class không có instance"], ans: 1, explain: "Một constraint là một phát biểu (statement) có thể được kiểm tra (tested) là đúng (true) hoặc sai (false). Nó mô tả các quy tắc nghiệp vụ mà hệ thống phải tuân thủ." },
+    { q: "Constraint {ordered} được dùng trong trường hợp nào?", opts: ["Khi các class được sắp xếp theo alphabet", "Khi các phần tử trong một association có thứ tự xác định", "Khi cần sắp xếp các subclass", "Khi một class có nhiều superclass"], ans: 1, explain: "{ordered} được dùng khi các phần tử trong một association có một thứ tự xác định. Ví dụ: danh sách sinh viên chờ (waitlist) được sắp xếp theo nguyên tắc FIFO – ai đến trước được ưu tiên trước." },
+    { q: "Trong ví dụ về Committee, tại sao chair có {subset} với members?", opts: ["Vì chair có quyền hạn cao hơn members", "Vì chủ tịch PHẢI là một thành viên của ủy ban", "Vì members được chọn từ tập hợp chair", "Vì chair và members là hai class khác nhau"], ans: 1, explain: "Chair là {subset} của members vì chủ tịch phải là thành viên của ủy ban. Tập hợp chủ tịch ⊆ tập hợp thành viên. Không ai có thể làm chủ tịch mà không phải là thành viên." },
+    { q: "Constraint {xor} có ý nghĩa gì trong class diagram?", opts: ["Hai class không thể liên kết với nhau", "Chỉ có thể chọn một trong hai đường liên kết, không thể chọn cả hai", "Một class có thể có nhiều loại association cùng lúc", "Hai association phải luôn tồn tại cùng nhau"], ans: 1, explain: "{xor} (Exclusive Or) có nghĩa là chỉ có thể chọn MỘT trong hai đường liên kết, không thể chọn cả hai. Ví dụ: Account chỉ thuộc về Person HOẶC Company, không thể vừa là cá nhân vừa là công ty." },
+    { q: "Khi một constraint được đặc tả trong class diagram, điều gì phải xảy ra trong quá trình implementation?", opts: ["Constraint có thể bỏ qua nếu khó cài đặt", "Constraint chỉ là gợi ý, không bắt buộc", "Constraint phải được đảm bảo (enforced) trong code", "Constraint chỉ áp dụng cho mô hình yêu cầu, không áp dụng cho code"], ans: 2, explain: "Khi một constraint được đặc tả trong class diagram, nó PHẢI được đảm bảo (enforced) trong quá trình implementation. Mô hình là một bản đặc tả chính xác, không chỉ là hình vẽ tham khảo." },
+    { q: "Trong tổng kết Class Diagram của Bài 2, loại nào được dùng để lưu thuộc tính của chính mối quan hệ?", opts: ["Generalization", "Composition", "Association Class", "Abstract Class"], ans: 2, explain: "Association Class (Lớp liên kết) được dùng để lưu trữ thuộc tính của chính mối quan hệ giữa hai class, khi thuộc tính đó không thể gắn vào một trong hai class đầu mút. Ví dụ: grade trong quan hệ Student – Course." }
+  ];
+
+  let currentQ = 0, score = 0, answered = false;
+  function renderQuestion() {
+    const q = quizData[currentQ];
+    document.getElementById('quizNum').textContent = `Câu ${currentQ + 1} / ${quizData.length}`;
+    document.getElementById('quizQ').textContent = q.q;
+    const optsEl = document.getElementById('quizOpts'); optsEl.innerHTML = '';
+    q.opts.forEach((opt, i) => { const btn = document.createElement('button'); btn.className = 'quiz-option'; btn.textContent = opt; btn.onclick = () => checkAnswer(i); optsEl.appendChild(btn); });
+    document.getElementById('quizFb').className = 'quiz-feedback'; document.getElementById('quizFb').textContent = '';
+    document.getElementById('quizNext').style.display = 'none';
+    document.getElementById('quizScore').textContent = `Điểm: ${score}/${quizData.length}`; answered = false;
+  }
+  function checkAnswer(i) {
+    if (answered) return; answered = true;
+    const q = quizData[currentQ]; const opts = document.querySelectorAll('.quiz-option'); opts.forEach(b => b.disabled = true);
+    const fb = document.getElementById('quizFb');
+    if (i === q.ans) { opts[i].classList.add('correct'); score++; fb.className = 'quiz-feedback correct show'; fb.textContent = '✅ Đúng! ' + q.explain; }
+    else { opts[i].classList.add('wrong'); opts[q.ans].classList.add('correct'); fb.className = 'quiz-feedback wrong show'; fb.textContent = '❌ Chưa đúng. ' + q.explain; }
+    document.getElementById('quizScore').textContent = `Điểm: ${score}/${quizData.length}`;
+    const nextBtn = document.getElementById('quizNext'); nextBtn.style.display = 'inline-block';
+    if (currentQ < quizData.length - 1) { nextBtn.textContent = 'Câu tiếp →'; nextBtn.onclick = nextQuestion; }
+    else { nextBtn.textContent = '🔄 Làm lại'; nextBtn.onclick = resetQuiz; }
+  }
+  function nextQuestion() { currentQ++; renderQuestion(); }
+  function resetQuiz() { currentQ = 0; score = 0; renderQuestion(); }
+  renderQuestion();
+</script>
+</body>
+</html>

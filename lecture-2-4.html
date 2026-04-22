@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lecture 2-4 – Association Class</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== CSS VARIABLES & THEME ===== */
+    :root {
+      --bg: #f5f2ec; --surface: #ffffff; --surface2: #eee9e0;
+      --border: #d6cfc3; --text: #1a1714; --text-muted: #6b6358;
+      --accent: #c8501a; --accent2: #2a6dd9; --accent3: #1a8a4a;
+      --highlight: #fff3cd; --highlight-border: #f5c842;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08); --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+      --radius: 12px; --radius-sm: 6px;
+    }
+    [data-theme="dark"] {
+      --bg: #121010; --surface: #1e1b18; --surface2: #2a2520;
+      --border: #3a3530; --text: #f0ebe3; --text-muted: #9a9080;
+      --accent: #e8704a; --accent2: #5a9bf5; --accent3: #4ac87a;
+      --highlight: #2a2200; --highlight-border: #a08020;
+      --shadow: 0 2px 12px rgba(0,0,0,0.4); --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.7; transition: background 0.3s, color 0.3s; }
+    strong { color: var(--accent); font-weight: 600; }
+    code { font-family: 'JetBrains Mono', monospace; background: var(--surface2); padding: 2px 7px; border-radius: 4px; font-size: 0.88em; color: var(--accent2); }
+    a { color: var(--accent2); text-decoration: none; }
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ===== LAYOUT ===== */
+    .page-wrapper { max-width: 900px; margin: 0 auto; padding: 0 20px 80px; }
+
+    /* ===== HEADER ===== */
+    .site-header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); }
+    .site-header .brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; letter-spacing: -0.02em; color: var(--accent); }
+    .header-controls { display: flex; gap: 10px; align-items: center; }
+    .dark-toggle { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; cursor: pointer; font-size: 0.82rem; font-family: 'DM Sans', sans-serif; color: var(--text); transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .dark-toggle:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); z-index: 200; transition: width 0.1s; }
+
+    /* ===== HERO ===== */
+    .hero { padding: 60px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
+    .hero-label { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; background: var(--accent); color: #fff; padding: 4px 12px; border-radius: 4px; margin-bottom: 20px; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 16px; color: var(--text); }
+    .hero h1 span { color: var(--accent); }
+    .hero-desc { font-size: 1.05rem; color: var(--text-muted); max-width: 620px; line-height: 1.7; }
+
+    /* ===== TOC ===== */
+    .toc { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 20px 24px; margin: 32px 0; }
+    .toc-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+    .toc ol { padding-left: 20px; } .toc li { margin: 5px 0; font-size: 0.92rem; } .toc a { color: var(--accent2); } .toc a:hover { color: var(--accent); }
+
+    /* ===== SECTION ===== */
+    .section { margin-bottom: 52px; }
+    .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+    .section-num { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 500; color: var(--accent); background: var(--surface2); border: 1px solid var(--border); padding: 4px 10px; border-radius: 4px; white-space: nowrap; }
+    .section h2 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; color: var(--text); }
+
+    /* ===== CARD ===== */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 26px; margin-bottom: 16px; box-shadow: var(--shadow); }
+    .card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 12px; color: var(--text); }
+    .card p { color: var(--text); margin-bottom: 10px; } .card p:last-child { margin-bottom: 0; }
+    .card ul, .card ol { padding-left: 20px; color: var(--text); } .card li { margin: 6px 0; }
+    .card-highlight { border-left: 4px solid var(--highlight-border); background: var(--highlight); }
+    .card-accent { border-left: 4px solid var(--accent); }
+    .card-blue { border-left: 4px solid var(--accent2); }
+    .card-green { border-left: 4px solid var(--accent3); }
+
+    /* ===== TOOLTIP ===== */
+    .tip { position: relative; cursor: help; border-bottom: 2px dashed var(--accent2); color: inherit; }
+    .tip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 0.78rem; line-height: 1.5; padding: 8px 12px; border-radius: 8px; white-space: normal; width: 220px; text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 50; font-family: 'DM Sans', sans-serif; font-weight: 400; }
+    .tip::before { content: ''; position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: var(--text); opacity: 0; transition: opacity 0.2s; z-index: 50; }
+    .tip:hover::after, .tip:hover::before { opacity: 1; }
+
+    /* ===== ACCORDION ===== */
+    .accordion { margin-bottom: 10px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+    .accordion-btn { width: 100%; background: var(--surface); border: none; padding: 16px 20px; text-align: left; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.97rem; font-weight: 500; color: var(--text); display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: background 0.2s; }
+    .accordion-btn:hover { background: var(--surface2); } .accordion-btn.open { background: var(--surface2); color: var(--accent); }
+    .accordion-icon { font-size: 1.2rem; transition: transform 0.3s; flex-shrink: 0; color: var(--accent); }
+    .accordion-btn.open .accordion-icon { transform: rotate(180deg); }
+    .accordion-body { background: var(--surface); max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s; padding: 0 20px; }
+    .accordion-body.open { max-height: 900px; padding: 18px 20px; border-top: 1px solid var(--border); }
+    .accordion-body p, .accordion-body li { font-size: 0.95rem; color: var(--text); }
+    .accordion-body ul { padding-left: 18px; } .accordion-body li { margin: 6px 0; }
+
+    /* ===== TABLE ===== */
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; background: var(--surface); border-radius: var(--radius); overflow: hidden; }
+    th { background: var(--surface2); padding: 12px 16px; text-align: left; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+    td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text); }
+    tr:last-child td { border-bottom: none; } tr:hover td { background: var(--surface2); }
+
+    /* ===== TABS ===== */
+    .tabs-wrapper { margin-bottom: 16px; }
+    .tab-list { display: flex; gap: 4px; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+    .tab-btn { background: none; border: none; padding: 10px 18px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500; color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+    .tab-btn:hover { color: var(--accent); background: var(--surface2); } .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--surface); }
+    .tab-panel { display: none; background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); padding: 22px; }
+    .tab-panel.active { display: block; }
+
+    /* ===== NOTE BOX ===== */
+    .note-box { background: var(--highlight); border: 1px solid var(--highlight-border); border-radius: var(--radius); padding: 18px 22px; margin: 16px 0; font-size: 0.94rem; }
+    .note-box-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--highlight-border); margin-bottom: 8px; }
+    [data-theme="dark"] .note-box-title { color: #c8a030; }
+
+    /* ===== DIAGRAM BOX ===== */
+    .diagram-box { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 16px 0; }
+    .diagram-label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; text-align: center; }
+    .diagram-row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 8px 0; }
+    .d-node { background: var(--surface); border: 2px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 500; color: var(--accent); text-align: center; }
+    .d-node-blue { border-color: var(--accent2); color: var(--accent2); }
+    .d-node-green { border-color: var(--accent3); color: var(--accent3); }
+    .d-node-assoc { border-style: dashed; background: var(--highlight); border-color: var(--highlight-border); color: var(--text); }
+    .d-arrow { color: var(--text-muted); font-size: 1.1rem; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .d-arrow small { font-family: 'DM Sans', sans-serif; font-size: 0.7rem; color: var(--text-muted); }
+    .d-vline { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .d-vline-bar { width: 2px; height: 24px; background: var(--highlight-border); }
+    .d-vline-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--highlight-border); }
+
+    /* ===== CODE BLOCK ===== */
+    .code-block { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.8; overflow-x: auto; color: var(--text); margin: 16px 0; }
+
+    /* ===== FLASHCARD ===== */
+    .flashcard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 16px; }
+    .flashcard { perspective: 800px; cursor: pointer; height: 160px; }
+    .flashcard-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); border-radius: var(--radius); }
+    .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-front, .flashcard-back { position: absolute; inset: 0; backface-visibility: hidden; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px; text-align: center; border: 1px solid var(--border); }
+    .flashcard-front { background: var(--surface); color: var(--text); }
+    .flashcard-back { background: var(--accent); color: #fff; transform: rotateY(180deg); }
+    .flashcard-front .term { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 8px; }
+    .flashcard-front .hint { font-size: 0.75rem; color: var(--text-muted); }
+    .flashcard-back .def { font-size: 0.85rem; line-height: 1.5; }
+
+    /* ===== QUIZ ===== */
+    .quiz-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-top: 16px; }
+    .quiz-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
+    .quiz-question { font-weight: 600; font-size: 1rem; margin-bottom: 16px; color: var(--text); }
+    .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-option { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; cursor: pointer; font-size: 0.92rem; color: var(--text); transition: all 0.2s; text-align: left; }
+    .quiz-option:hover:not(:disabled) { border-color: var(--accent2); background: var(--surface); }
+    .quiz-option.correct { background: #d4fce6; border-color: var(--accent3); color: #0a4a20; }
+    .quiz-option.wrong { background: #fce4d4; border-color: var(--accent); color: #4a1000; }
+    [data-theme="dark"] .quiz-option.correct { background: #0a2a18; color: #4ac87a; }
+    [data-theme="dark"] .quiz-option.wrong { background: #2a1008; color: #e8704a; }
+    .quiz-feedback { margin-top: 14px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.9rem; display: none; }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct { background: #d4fce6; color: #0a4a20; border: 1px solid var(--accent3); }
+    .quiz-feedback.wrong { background: #fce4d4; color: #4a1000; border: 1px solid var(--accent); }
+    [data-theme="dark"] .quiz-feedback.correct { background: #0a2a18; color: #4ac87a; border-color: var(--accent3); }
+    [data-theme="dark"] .quiz-feedback.wrong { background: #2a1008; color: #e8704a; border-color: var(--accent); }
+    .quiz-nav { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
+    .btn { padding: 9px 20px; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid var(--border); background: var(--surface2); color: var(--text); }
+    .btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); } .btn-primary:hover { opacity: 0.85; }
+    .quiz-score { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); margin-left: auto; }
+
+    /* ===== SUMMARY ===== */
+    .summary-list { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+    .summary-item { display: flex; gap: 14px; align-items: flex-start; padding: 14px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+    .summary-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--accent); line-height: 1; flex-shrink: 0; min-width: 32px; }
+    .summary-content { font-size: 0.93rem; color: var(--text); }
+
+    /* ===== FOOTER ===== */
+    .site-footer { border-top: 1px solid var(--border); padding: 32px 20px; text-align: center; font-size: 0.82rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+    /* ===== FADE-IN ===== */
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.5s; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 1.8rem; }
+      .flashcard-grid { grid-template-columns: 1fr 1fr; }
+      .tab-btn { padding: 8px 12px; font-size: 0.82rem; }
+      .card { padding: 16px; }
+      .section h2 { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="brand">UML · Lecture 2-4</div>
+  <div class="header-controls">
+    <button class="dark-toggle" onclick="toggleDark()" id="darkBtn">🌙 Dark Mode</button>
+  </div>
+</header>
+
+<div class="page-wrapper">
+
+  <!-- HERO -->
+  <div class="hero fade-in">
+    <div class="hero-label">Lecture 2-4</div>
+    <h1>Class Diagram:<br><span>Association Class</span></h1>
+    <p class="hero-desc">
+      Bài giảng này giải quyết vấn đề: <strong>Làm thế nào để lưu trữ một thuộc tính (attribute) thuộc về chính mối quan hệ giữa hai đối tượng?</strong> Thông qua ví dụ về việc lưu điểm số (grade), bài học giới thiệu <strong>Association Class (Lớp liên kết)</strong>, giới hạn của nó và mô hình phức tạp hơn sử dụng <strong>Offering</strong>.
+    </p>
+
+    <div class="toc">
+      <div class="toc-title">📋 Mục lục</div>
+      <ol>
+        <li><a href="#s1">Vấn đề đặt ra: Lưu trữ thuộc tính của mối quan hệ</a></li>
+        <li><a href="#s2">Giải pháp 1: Association Class</a></li>
+        <li><a href="#s3">Giới hạn của Association Class</a></li>
+        <li><a href="#s4">Giải pháp 2: Mô hình với Offering</a></li>
+        <li><a href="#s-example">Ví dụ minh họa</a></li>
+        <li><a href="#s-note">Ghi chú quan trọng</a></li>
+        <li><a href="#s-flash">Flashcard ôn tập</a></li>
+        <li><a href="#s-quiz">Quiz kiểm tra</a></li>
+        <li><a href="#s-summary">Tổng kết</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- SECTION 1: VẤN ĐỀ -->
+  <div class="section fade-in" id="s1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Vấn đề đặt ra: Lưu trữ thuộc tính của mối quan hệ</h2>
+    </div>
+
+    <div class="card card-highlight">
+      <h3>📌 Yêu cầu bài toán</h3>
+      <p>Hệ thống quản lý sinh viên và khóa học. Cần lưu thông tin <strong>grade (điểm số)</strong> cho mỗi lần một sinh viên đăng ký một khóa học.</p>
+      <p><strong>Ví dụ:</strong> Macro đăng ký COMP 3111, COMP 3021, COMP 3311. Cần lưu điểm cho từng cặp (Macro, COMP 3111), (Macro, COMP 3021)...</p>
+    </div>
+
+    <div class="card">
+      <h3>❌ Các phương án không khả thi</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Phương án</th>
+              <th>Mô tả</th>
+              <th>Vấn đề</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Option 1</strong></td>
+              <td>Lưu <code>grade</code> như một <strong>attribute của class <code>Student</code></strong></td>
+              <td>Không biết trước mỗi sinh viên cần bao nhiêu thuộc tính grade (vì mỗi sinh viên đăng ký số lượng khóa học khác nhau).</td>
+            </tr>
+            <tr>
+              <td><strong>Option 2</strong></td>
+              <td>Lưu <code>grade</code> như một <strong>multi-valued attribute</strong> (ví dụ: mảng <code>grades[]</code>) trong class <code>Student</code></td>
+              <td>Không biết <strong>grade nào tương ứng với course nào</strong> (mất thông tin ánh xạ).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: ASSOCIATION CLASS -->
+  <div class="section fade-in" id="s2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Giải pháp 1: Association Class (Lớp liên kết)</h2>
+    </div>
+
+    <div class="card card-accent">
+      <h3>Định nghĩa</h3>
+      <p>Khi một <strong>association (liên kết)</strong> có các <strong>properties (thuộc tính)</strong> riêng, ta có thể mô hình hóa các thuộc tính đó bằng một <span class="tip" data-tip="Lớp liên kết: Một class đặc biệt gắn liền với association, dùng để lưu trữ các thuộc tính của chính mối quan hệ đó."><strong>association class</strong></span> gắn liền với association.</p>
+    </div>
+
+    <div class="card">
+      <h3>Cách hoạt động</h3>
+      <ul>
+        <li>Association class nằm giữa hai class (ví dụ: <code>Student</code> và <code>Course</code>).</li>
+        <li>Mỗi <strong>link</strong> (ví dụ: Macro – COMP 3111) sẽ có một instance của association class, và instance đó chứa các attribute (ví dụ: <code>grade</code>).</li>
+      </ul>
+
+      <!-- Diagram minh họa Association Class -->
+      <div class="diagram-box" style="margin-top:16px;">
+        <div class="diagram-label">Sơ đồ: Student – EnrollsIn (Association Class) – Course</div>
+        <div class="diagram-row">
+          <div class="d-node">Student</div>
+          <div class="d-arrow">——<small>enrolls in</small>——</div>
+          <div class="d-node d-node-blue">Course</div>
+        </div>
+        <!-- Dashed line connecting to association class -->
+        <div style="display:flex; justify-content:center; margin: 4px 0;">
+          <div class="d-vline">
+            <div class="d-vline-bar"></div>
+            <div class="d-vline-dot"></div>
+          </div>
+        </div>
+        <div class="diagram-row">
+          <div class="d-node d-node-assoc">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; font-weight:600; margin-bottom:4px;">EnrollsIn</div>
+            <div style="font-family:'DM Sans',sans-serif; font-size:0.78rem; color:var(--text-muted);">grade: String</div>
+          </div>
+        </div>
+        <p style="font-size:0.8rem; color:var(--text-muted); text-align:center; margin-top:12px;">
+          Association class được nối vào đường liên kết bằng <em>đường đứt nét</em>
+        </p>
+      </div>
+    </div>
+
+    <div class="card card-green">
+      <h3>✅ Ví dụ cụ thể</h3>
+      <ul>
+        <li>Macro + COMP 3111 → lưu <code>grade = A+</code></li>
+        <li>Jason + COMP 3111 → lưu <code>grade = A</code></li>
+        <li>Macro + COMP 3021 → lưu <code>grade = B+</code></li>
+      </ul>
+      <p style="margin-top:10px;">Mỗi <strong>link</strong> (cặp Student – Course) có một instance của <code>EnrollsIn</code> riêng chứa điểm tương ứng.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3: GIỚI HẠN -->
+  <div class="section fade-in" id="s3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Giới hạn của Association Class (Hạn chế quan trọng)</h2>
+    </div>
+
+    <div class="card card-highlight">
+      <h3>⚠️ Quy tắc cốt lõi</h3>
+      <p>Một cặp <strong>instances (thể hiện)</strong> chỉ có thể được kết nối với nhau bằng <strong>tối đa một link</strong> duy nhất.</p>
+      <p style="margin-top:8px; font-style:italic; color:var(--text-muted);">"Once a pair of instances are related, they are related. We cannot relate the same pair of instances using two different links."</p>
+    </div>
+
+    <div class="card">
+      <h3>Ví dụ về hạn chế – Trường hợp Kenneth học lại</h3>
+
+      <div class="tabs-wrapper">
+        <div class="tab-list">
+          <button class="tab-btn active" onclick="openTab(this,'tab-fail')">Lần 1: Fail</button>
+          <button class="tab-btn" onclick="openTab(this,'tab-pass')">Lần 2: A+</button>
+          <button class="tab-btn" onclick="openTab(this,'tab-problem')">⚠️ Vấn đề</button>
+        </div>
+        <div class="tab-panel active" id="tab-fail">
+          <p>Kenneth đăng ký <strong>COMP 3111</strong> vào học kỳ trước và bị <strong>Fail (F)</strong>.</p>
+          <p>→ Lưu link <code>(Kenneth, COMP 3111)</code> với <code>grade = F</code>.</p>
+        </div>
+        <div class="tab-panel" id="tab-pass">
+          <p>Kenneth đăng ký lại <strong>COMP 3111</strong> vào học kỳ này và được <strong>A+</strong>.</p>
+          <p>→ Muốn lưu link <code>(Kenneth, COMP 3111)</code> mới với <code>grade = A+</code>.</p>
+        </div>
+        <div class="tab-panel" id="tab-problem">
+          <p><strong>Kết quả:</strong> Chỉ có thể giữ lại <strong>một trong hai links</strong> (thường là link mới nhất, <code>grade = A+</code>). <strong>Không thể lưu cả hai lần đăng ký.</strong></p>
+          <div class="note-box" style="margin-top:12px;">
+            <div class="note-box-title">❌ Kết luận</div>
+            <p>Mô hình <code>Student</code> — <code>EnrollsIn</code> — <code>Course</code> <strong>không thể lưu trữ thông tin lịch sử (historical information)</strong> khi cùng một sinh viên đăng ký cùng một khóa học nhiều lần.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: OFFERING -->
+  <div class="section fade-in" id="s4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Giải pháp 2: Mô hình phức tạp hơn với Offering (Đợt mở lớp)</h2>
+    </div>
+
+    <p style="margin-bottom:16px; color:var(--text-muted);">Để khắc phục hạn chế trên, cần tách khái niệm <strong>Course (khóa học)</strong> và <strong>Offering (đợt mở lớp)</strong>.</p>
+
+    <div class="card card-blue">
+      <h3>Định nghĩa Offering</h3>
+      <p>Một <strong>offering</strong> là một lần một khóa học được mở cụ thể trong một học kỳ nhất định.</p>
+      <ul style="margin-top:8px;">
+        <li><code>COMP 3111</code> (Course) có các offerings: "COMP 3111 Fall 2019", "COMP 3111 Spring 2020".</li>
+        <li><code>COMP 3311</code> (Course) có offerings: "COMP 3311 Fall 2020", v.v.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Mô hình mới</h3>
+      <div class="diagram-box">
+        <div class="diagram-label">Sơ đồ: Student – Offering – Course</div>
+        <div class="diagram-row">
+          <div class="d-node">Student</div>
+          <div class="d-arrow">——<small>enrolls in</small>——</div>
+          <div class="d-node d-node-blue">
+            <div style="font-weight:600;">Offering</div>
+            <div style="font-family:'DM Sans',sans-serif; font-size:0.72rem; color:var(--text-muted); margin-top:4px;">semester: String<br>year: Integer</div>
+          </div>
+          <div class="d-arrow">——<small>offers</small>——</div>
+          <div class="d-node d-node-green">Course</div>
+        </div>
+        <div style="display:flex; justify-content:center; margin: 4px 0;">
+          <div class="d-vline">
+            <div class="d-vline-bar"></div>
+            <div class="d-vline-dot"></div>
+          </div>
+        </div>
+        <div class="diagram-row">
+          <div class="d-node d-node-assoc">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600; margin-bottom:4px;">EnrollsIn / Takes</div>
+            <div style="font-family:'DM Sans',sans-serif; font-size:0.78rem; color:var(--text-muted);">grade: String</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-green">
+      <h3>✅ Kết quả với trường hợp Kenneth</h3>
+      <ul>
+        <li>Kenneth enrolls into offering <strong>"COMP 3111 Fall 2019"</strong> → <code>grade = F</code></li>
+        <li>Kenneth enrolls into offering <strong>"COMP 3111 Spring 2020"</strong> → <code>grade = A+</code></li>
+        <li>Hai cặp instance khác nhau: <code>(Kenneth, Offering_Fall2019)</code> và <code>(Kenneth, Offering_Spring2020)</code> → <strong>cho phép lưu cả hai thông tin</strong>.</li>
+      </ul>
+    </div>
+
+    <div class="card card-accent">
+      <h3>Lợi ích</h3>
+      <p>Mô hình này cho phép lưu trữ toàn bộ lịch sử (<strong>historical information</strong>) và cho phép sinh viên đăng ký cùng một khóa học nhiều lần thông qua các offerings khác nhau trong các học kỳ khác nhau.</p>
+    </div>
+  </div>
+
+  <!-- SECTION: VÍ DỤ MINH HỌA -->
+  <div class="section fade-in" id="s-example">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Ví dụ minh họa</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tình huống</th>
+            <th>Mô hình Association Class đơn giản</th>
+            <th>Mô hình với Offering</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Macro đăng ký COMP3111 lần đầu, điểm A+</strong></td>
+            <td>Lưu được: (Macro, COMP3111) → A+</td>
+            <td>Lưu được: (Macro, Offering_Fall2020) → A+</td>
+          </tr>
+          <tr>
+            <td><strong>Kenneth đăng ký COMP3111 lần 1 (Fail), lần 2 (A+)</strong></td>
+            <td><strong>KHÔNG</strong> lưu được cả hai. Chỉ giữ được link mới nhất (A+).</td>
+            <td><strong>LƯU ĐƯỢC</strong> cả hai: (Kenneth, Offering_Fall2019) → F; (Kenneth, Offering_Spring2020) → A+.</td>
+          </tr>
+          <tr>
+            <td><strong>Bản chất</strong></td>
+            <td>Mỗi cặp (Student, Course) chỉ có <strong>một link</strong> duy nhất.</td>
+            <td>Mỗi cặp (Student, Offering) là duy nhất. Cùng một Course nhưng khác Offering sẽ tạo ra các cặp khác nhau.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3>Minh họa bằng sơ đồ tư duy</h3>
+      <div class="code-block">Mô hình đơn giản (có vấn đề):
+[Student] ---- (EnrollsIn, grade) ---- [Course]
+Vấn đề: (Kenneth, COMP3111) chỉ tồn tại MỘT link.
+
+Mô hình với Offering (giải pháp):
+[Student] ---- (EnrollsIn, grade) ---- [Offering] ---- [Course]
+                                          |
+                                          +-- semester: String
+                                          +-- year: Integer
+
+Offering 1: COMP3111, Fall 2019
+Offering 2: COMP3111, Spring 2020
+
+=> (Kenneth, Offering1) và (Kenneth, Offering2) là HAI cặp khác nhau.</div>
+    </div>
+  </div>
+
+  <!-- SECTION: GHI CHÚ QUAN TRỌNG -->
+  <div class="section fade-in" id="s-note">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Ghi chú quan trọng</h2>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        📌 Association Class được dùng khi thuộc tính KHÔNG thể gắn vào một trong hai class đầu mút
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <ul>
+          <li>Điểm số (<code>grade</code>) không phải là thuộc tính chỉ của sinh viên (vì mỗi course có điểm khác nhau).</li>
+          <li>Điểm số cũng không phải là thuộc tính chỉ của khóa học (vì mỗi sinh viên có điểm khác nhau).</li>
+          <li>Điểm số thuộc về <strong>chính mối quan hệ</strong> giữa sinh viên và khóa học.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        ⚠️ Hạn chế cốt lõi của Association Class
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <ul>
+          <li>Mỗi cặp instances chỉ được phép có <strong>tối đa một link</strong>.</li>
+          <li>Điều này dẫn đến việc <strong>không thể lưu lịch sử</strong> nếu cùng một cặp instances có nhiều mối quan hệ theo thời gian.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        🔧 Khi nào cần mô hình Offering (hay nói chung là một class trung gian)?
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <ul>
+          <li>Khi cần lưu thông tin <strong>phụ thuộc vào thời gian</strong> (ví dụ: học kỳ, năm học).</li>
+          <li>Khi cùng một cặp class có thể có <strong>nhiều instances của mối quan hệ</strong> (nhiều lần đăng ký, nhiều lần giao dịch, v.v.).</li>
+          <li><strong>Nguyên tắc chung:</strong> Nếu bạn cần phân biệt các lần xuất hiện khác nhau của cùng một mối quan hệ, hãy tạo một class trung gian (ở đây là <code>Offering</code>).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="accordion">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        🔄 Bài học thiết kế: Mô hình hóa là quá trình lặp đi lặp lại
+        <span class="accordion-icon">▾</span>
+      </button>
+      <div class="accordion-body">
+        <p>Mô hình hóa là một quá trình <strong>lặp đi lặp lại (iterative)</strong>. Mô hình đơn giản (association class) có thể đủ cho một số yêu cầu, nhưng khi yêu cầu mới xuất hiện (lưu lịch sử), cần <strong>tinh chỉnh (refine)</strong> mô hình để phức tạp hơn nhưng đầy đủ hơn.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLASHCARD -->
+  <div class="section fade-in" id="s-flash">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>Flashcard ôn tập</h2>
+    </div>
+    <p style="color:var(--text-muted); margin-bottom:16px; font-size:0.92rem;">Bấm vào thẻ để xem định nghĩa ↓</p>
+
+    <div class="flashcard-grid">
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">Association Class</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Lớp liên kết – Dùng để lưu trữ các thuộc tính của chính mối quan hệ giữa hai class, khi thuộc tính đó không thuộc về riêng bên nào.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">Link</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Một instance (thể hiện) của association – kết nối cụ thể giữa hai instance, ví dụ: (Macro, COMP3111).</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">Giới hạn của Association Class</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Mỗi cặp instances chỉ được phép có TỐI ĐA MỘT link duy nhất → không lưu được lịch sử.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">Offering</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Đợt mở lớp – Một lần cụ thể một khóa học được mở trong một học kỳ nhất định. Giải pháp để lưu lịch sử đăng ký.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">Reification</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Vật thể hóa mối quan hệ – Nâng cấp một association thành một class riêng để có thể lưu trữ nhiều thông tin hơn.</div></div>
+        </div>
+      </div>
+      <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="flashcard-inner">
+          <div class="flashcard-front"><div class="term">Historical Information</div><div class="hint">Bấm để lật →</div></div>
+          <div class="flashcard-back"><div class="def">Thông tin lịch sử – Cần lưu nhiều lần cùng mối quan hệ theo thời gian. Cần dùng class trung gian (Offering) thay vì Association Class đơn giản.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section fade-in" id="s-quiz">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>Quiz kiểm tra</h2>
+    </div>
+    <p style="color:var(--text-muted); margin-bottom:12px; font-size:0.92rem;">Tất cả câu hỏi đều dựa trên nội dung bài giảng.</p>
+    <div class="quiz-box" id="quizBox">
+      <div class="quiz-num" id="quizNum"></div>
+      <div class="quiz-question" id="quizQ"></div>
+      <div class="quiz-options" id="quizOpts"></div>
+      <div class="quiz-feedback" id="quizFb"></div>
+      <div class="quiz-nav">
+        <button class="btn btn-primary" id="quizNext" onclick="nextQuestion()" style="display:none;">Câu tiếp →</button>
+        <div class="quiz-score" id="quizScore"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="section fade-in" id="s-summary">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2>Tổng kết – Những điều cần nắm</h2>
+    </div>
+
+    <div class="summary-list">
+      <div class="summary-item">
+        <div class="summary-num">1</div>
+        <div class="summary-content">
+          <strong>Association Class (Lớp liên kết)</strong> là một thành phần trong UML Class Diagram dùng để mô hình hóa các <strong>thuộc tính của chính mối quan hệ</strong> giữa hai class, khi các thuộc tính đó không thể gắn vào một trong hai class đầu mút.
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">2</div>
+        <div class="summary-content">
+          <strong>Ví dụ điển hình:</strong> Lưu <code>grade</code> (điểm số) cho mối quan hệ <code>Student</code> enrolls in <code>Course</code>. <code>grade</code> không phải của riêng Student cũng không phải của riêng Course.
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">3</div>
+        <div class="summary-content">
+          <strong>Giới hạn của Association Class:</strong> Mỗi cặp instances (ví dụ: một Student cụ thể và một Course cụ thể) chỉ có thể có <strong>một link duy nhất</strong>. Do đó, <strong>không thể lưu lịch sử</strong> nếu cùng cặp đó có nhiều mối quan hệ theo thời gian (ví dụ: học lại khóa học).
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">4</div>
+        <div class="summary-content">
+          <strong>Giải pháp cho vấn đề lịch sử:</strong> Thay vì kết nối trực tiếp Student với Course, hãy tạo một class trung gian (ví dụ: <strong>Offering</strong> – đợt mở lớp). Khi đó: <code>Student</code> liên kết với <code>Offering</code> (qua association class chứa <code>grade</code>). <code>Offering</code> liên kết với <code>Course</code>. Cùng một <code>Course</code> có thể có nhiều <code>Offering</code> khác nhau.
+        </div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-num">5</div>
+        <div class="summary-content">
+          <strong>Nguyên tắc thiết kế:</strong> Khi một mối quan hệ có chứa thông tin cần lưu trữ và có thể xuất hiện nhiều lần giữa cùng hai đối tượng theo thời gian, hãy cân nhắc <strong>nâng cấp mối quan hệ đó thành một class riêng</strong> (gọi là <strong>reification</strong> – vật thể hóa mối quan hệ).
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page-wrapper -->
+
+<footer class="site-footer">
+  <div class="page-wrapper">
+    Lecture 2-4 · Class Diagram: Association Class · Tài liệu học tập tương tác
+  </div>
+</footer>
+
+<script>
+  /* Dark Mode */
+  function toggleDark() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('darkBtn').textContent = isDark ? '🌙 Dark Mode' : '☀️ Light Mode';
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  }
+  (function() {
+    const t = localStorage.getItem('theme');
+    if (t === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.addEventListener('DOMContentLoaded', () => { document.getElementById('darkBtn').textContent = '☀️ Light Mode'; });
+    }
+  })();
+
+  /* Progress Bar */
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+
+  /* Accordion */
+  function toggleAcc(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    btn.classList.toggle('open', !isOpen);
+    body.classList.toggle('open', !isOpen);
+  }
+
+  /* Tabs */
+  function openTab(btn, panelId) {
+    btn.closest('.tabs-wrapper').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.closest('.tabs-wrapper').querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(panelId).classList.add('active');
+  }
+
+  /* Fade-in */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  /* Quiz */
+  const quizData = [
+    { q: "Association Class được dùng trong trường hợp nào?", opts: ["Khi muốn thêm nhiều subclass vào một class", "Khi một association có các thuộc tính riêng không thể gắn vào một trong hai class đầu mút", "Khi muốn tạo ra nhiều link giữa hai cặp instance", "Khi cần đặt tên cho các vai trò trong association"], ans: 1, explain: "Association Class được dùng khi chính mối quan hệ (association) cần lưu trữ thuộc tính riêng – ví dụ grade không thuộc về Student hay Course mà thuộc về mối quan hệ giữa hai bên." },
+    { q: "Hạn chế cốt lõi của Association Class là gì?", opts: ["Không thể thêm nhiều hơn 2 attribute vào association class", "Không thể dùng association class với abstract class", "Mỗi cặp instances chỉ được phép có tối đa một link duy nhất", "Association class không thể có operations"], ans: 2, explain: "Đây là hạn chế quan trọng nhất: một cặp instances (ví dụ Kenneth và COMP3111) chỉ có thể được kết nối bằng đúng một link, nên không thể lưu được cả hai lần đăng ký của cùng một sinh viên cho cùng một course." },
+    { q: "Tại sao không thể lưu `grade` như một attribute thông thường trong class Student?", opts: ["Vì grade không phải kiểu dữ liệu hợp lệ", "Vì không biết trước mỗi sinh viên cần bao nhiêu thuộc tính grade tương ứng với từng course", "Vì Student là abstract class", "Vì grade phải là thuộc tính của Course"], ans: 1, explain: "Mỗi sinh viên đăng ký số lượng khóa học khác nhau, nên không thể biết trước cần bao nhiêu thuộc tính grade. Hơn nữa, nếu dùng multi-valued attribute grades[] thì không biết grade nào tương ứng với course nào." },
+    { q: "Trong mô hình có Offering, tại sao Kenneth có thể lưu được cả hai lần đăng ký COMP3111?", opts: ["Vì Offering là abstract class", "Vì mỗi lần mở lớp là một Offering khác nhau, tạo ra hai cặp (Kenneth, Offering) khác nhau", "Vì association class có thể chứa nhiều links", "Vì COMP3111 được mở thành hai Course riêng biệt"], ans: 1, explain: "COMP 3111 Fall 2019 và COMP 3111 Spring 2020 là hai Offering khác nhau. Do đó (Kenneth, Offering_Fall2019) và (Kenneth, Offering_Spring2020) là hai cặp instances hoàn toàn khác nhau, mỗi cặp có một link riêng." },
+    { q: "Khái niệm 'reification' trong thiết kế mô hình có nghĩa là gì?", opts: ["Thêm ràng buộc vào class diagram", "Nâng cấp một mối quan hệ thành một class riêng", "Xóa các association không cần thiết", "Đổi tên các class cho rõ nghĩa hơn"], ans: 1, explain: "Reification (vật thể hóa mối quan hệ) là kỹ thuật nâng cấp một association thành một class riêng biệt, giúp lưu trữ nhiều thông tin hơn và xử lý các trường hợp phức tạp như lưu lịch sử." }
+  ];
+
+  let currentQ = 0, score = 0, answered = false;
+
+  function renderQuestion() {
+    const q = quizData[currentQ];
+    document.getElementById('quizNum').textContent = `Câu ${currentQ + 1} / ${quizData.length}`;
+    document.getElementById('quizQ').textContent = q.q;
+    const optsEl = document.getElementById('quizOpts');
+    optsEl.innerHTML = '';
+    q.opts.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-option'; btn.textContent = opt;
+      btn.onclick = () => checkAnswer(i);
+      optsEl.appendChild(btn);
+    });
+    document.getElementById('quizFb').className = 'quiz-feedback';
+    document.getElementById('quizFb').textContent = '';
+    document.getElementById('quizNext').style.display = 'none';
+    document.getElementById('quizScore').textContent = `Điểm: ${score}/${quizData.length}`;
+    answered = false;
+  }
+
+  function checkAnswer(i) {
+    if (answered) return;
+    answered = true;
+    const q = quizData[currentQ];
+    const opts = document.querySelectorAll('.quiz-option');
+    opts.forEach(b => b.disabled = true);
+    const fb = document.getElementById('quizFb');
+    if (i === q.ans) { opts[i].classList.add('correct'); score++; fb.className = 'quiz-feedback correct show'; fb.textContent = '✅ Đúng! ' + q.explain; }
+    else { opts[i].classList.add('wrong'); opts[q.ans].classList.add('correct'); fb.className = 'quiz-feedback wrong show'; fb.textContent = '❌ Chưa đúng. ' + q.explain; }
+    document.getElementById('quizScore').textContent = `Điểm: ${score}/${quizData.length}`;
+    const nextBtn = document.getElementById('quizNext');
+    nextBtn.style.display = 'inline-block';
+    if (currentQ < quizData.length - 1) { nextBtn.textContent = 'Câu tiếp →'; nextBtn.onclick = nextQuestion; }
+    else { nextBtn.textContent = '🔄 Làm lại'; nextBtn.onclick = resetQuiz; }
+  }
+
+  function nextQuestion() { currentQ++; renderQuestion(); }
+  function resetQuiz() { currentQ = 0; score = 0; renderQuestion(); }
+  renderQuestion();
+</script>
+</body>
+</html>
